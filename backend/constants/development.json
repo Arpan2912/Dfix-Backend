@@ -1,0 +1,12 @@
+{
+    "database":{
+        "host": "localhost",
+        "port": 27017,
+        "db": "dfix"
+    },
+    "url":{
+        "protocol":"http",
+        "port":"3333",
+        "host":"localhost"
+    }
+}

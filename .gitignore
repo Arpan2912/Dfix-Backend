@@ -1,0 +1,19 @@
+# Specifies files to intentionally ignore when using Git
+# http://git-scm.com/docs/gitignore
+
+node_modules/
+www/build/
+platforms/*
+plugins
+
+lib/
+*.swp
+.DS_Store
+Thumbs.db
+uploads/avatars/*
+rethinkdb_data/*
+
+# Add patches to the plugin
+!plugins/cordova-plugin-contacts/src/ios/*
+nodemon.json
+.idea
