@@ -4,6 +4,7 @@ const key = require("../../config/secret.conf");
 
 module.exports = class UserController {
     static addUser(req, res) {
+        console.log("key", key);
         let email = req.body.email;
         let user = new User();
         user.email = email;
@@ -37,16 +38,16 @@ module.exports = class UserController {
     static updateUser(req, res) {
         let data = req.body;
         let user = {};
-        user._id = data._id;
+        //user._id = data._id;
         user.email = data.email;
         user.first_name = (!!data.first_name) ? data.first_name : null;
         user.last_name = (!!data.first_name) ? data.last_name : null;
-        user.password = (!!data.password) ? CryptoJS.MD5(data.password, key.secret) : null;
-        user.phone = (!!data.password) ? data.password : null;
-        user.created_at = new Date().toISOString();
+        user.password = (!!data.password) ? CryptoJS.MD5(data.password).toString() : null;
+        user.phone = (!!data.phone) ? data.phone : null;
         user.updated_at = new Date().toISOString();
 
-        User.update(user)
+        User.find({_id:data._id})
+            .update(user)
             .then((data) => {
                 res.json({ success: true, data: data, error: {} })
             })
@@ -71,7 +72,24 @@ module.exports = class UserController {
                 res.json({ success: true, data: data });
             })
             .catch(e => {
-                res.json({success:false,error:e})
+                res.json({ success: false, error: e })
+            })
+    }
+
+    static getUserByEmailId(req, res) {
+        let email = req.body.email;
+        console.log(email);
+        User.find({ email: email })
+            .then((data) => {
+                console.log(data);
+                if (data.length === 0) {
+                    res.json({ success: false, message: 'you are not allowed to Use this App' });
+                } else {
+                    res.json({ success: true, data: data[0] })
+                }
+            })
+            .catch(e => {
+                res.json({ success: false, error: e });
             })
     }
 }

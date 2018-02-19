@@ -3,12 +3,13 @@
 const expressJwt = require('express-jwt');
 const fs = require("fs");
 const path = require("path");
-const authConfig = require('../config/secret.conf');
+
+const key = require('../config/secret.conf');
 const dbConfig = require('../config/db.conf');
 
 /* REST */
-// const AuthenticationRoutes = require('../api/authentication/routes/authentication-routes');
-    const UserRoutes = require('../api/user/user-routes');
+   const UserRoutes = require('../api/user/user-routes');
+    const AuthenticationRoutes = require('../api/authenticate/authenticate-routes');
 /* Commons */
 // const StaticDispatcher = require('../commons/static/index');
 
@@ -19,18 +20,23 @@ module.exports = class Routes {
          * Following code allow to bypass authentication..
          * API validation (Except: AuthenticationRoutes)
          */
-        // var allowAccess = expressJwt({
-        //     secret: authConfig.secret,
-        // }).unless({
-        //     path: [
-        //         '/uploads/*'
-        //     ]
-        // });
-        // app.all(["/api/*"], allowAccess);
+        var allowAccess = expressJwt({
+            secret: key.secret,
+        }).unless({
+            path: [
+                '/uploads/*',
+                '/api/login',
+                '/api/update-user',
+                '/api/get-user-by-email'
+            ]
+        });
+
+        app.all(["/api/*"], allowAccess);
 
         /**
          * @description Following route allows to access user photos uploaded by user
          */
+        
         app.get("/uploads/*", function (req, res, next) {
             var avatar = __dirname + "/../.." + req.url;
             var fname = path.basename(avatar);
@@ -45,14 +51,7 @@ module.exports = class Routes {
 
         /* REST Routes */
         UserRoutes.init(router);
-
-        // router
-        //     .route('/push')
-        //     .get(TestPushDispatcher.pushNoti);
-
-        // router
-        //     .route('*')
-        //     .get(StaticDispatcher.sendIndex);
+        AuthenticationRoutes.init(router);
 
         app.use('/', router);
     }

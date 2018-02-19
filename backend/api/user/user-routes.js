@@ -17,5 +17,9 @@ module.exports = class UserRoutes {
         router
             .route('/api/delete-user')
             .post(UserController.deleteUser);
+
+        router
+            .route('/api/get-user-by-email')
+            .post(UserController.getUserByEmailId);
     }
 }
