@@ -13,11 +13,11 @@ module.exports = class StartStopDayController {
             if (data === true) {
                 console.log("folder already exist");
             } else {
-                fs.mkdir(_qroot + '/public/' + userId);F
+                fs.mkdir(_qroot + '/public/' + userId);
             }
         });
         
-        fs.writeFile(_qroot + '/public/' + userId + "/out.jpg", base64Data, 'base64', function (err) {
+        fs.writeFile(_qroot + '/public/' + userId + "/start.jpg", base64Data, 'base64', function (err) {
             console.log(err);
             let daySummary = new DaySummary();
             daySummary.user_id = userId;
