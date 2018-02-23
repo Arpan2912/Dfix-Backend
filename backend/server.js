@@ -29,22 +29,23 @@ app.get("/uploads/*", function (request, response, next) {
 });
 
 app.use("/api/*", function (request, response, next) {
+    console.log("token", request.headers);
     // origin = request.headers.origin;
     // if (allowedOrigins.indexOf(origin) > -1) {
-        //response.setHeader('Access-Control-Allow-Origin', origin);
-        response.setHeader('Access-Control-Allow-Origin', '*');
+    //response.setHeader('Access-Control-Allow-Origin', origin);
+    response.setHeader('Access-Control-Allow-Origin', '*');
     // Set to true if you need the website to include cookies in the requests sent
     //response.header('Access-Control-Allow-Origin', '*');
     response.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
     // response.header('Access-Control-Allow-Headers', request.headers['access-control-request-headers']);
-    response.header('Access-Control-Allow-Headers','*');
+    response.header('Access-Control-Allow-Headers', '*');
     response.header('Access-Control-Allow-Credentials', true);
     next();
 });
 
 var server = http.listen(siteConfig.getPort(), () => {
     console.log("Service is running on ", siteConfig.getRootURL());
-   
+
 });
 
 // const io = require('socket.io')(server);

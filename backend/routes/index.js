@@ -8,8 +8,9 @@ const key = require('../config/secret.conf');
 const dbConfig = require('../config/db.conf');
 
 /* REST */
-   const UserRoutes = require('../api/user/user-routes');
-    const AuthenticationRoutes = require('../api/authenticate/authenticate-routes');
+const UserRoutes = require('../api/user/user-routes');
+const AuthenticationRoutes = require('../api/authenticate/authenticate-routes');
+const StartStopDayRouter = require('../api/start-stop-day/start-stop-day-router');
 /* Commons */
 // const StaticDispatcher = require('../commons/static/index');
 
@@ -27,7 +28,8 @@ module.exports = class Routes {
                 '/uploads/*',
                 '/api/login',
                 '/api/update-user',
-                '/api/get-user-by-email'
+                '/api/get-user-by-email',
+                '/api/add-user' // this will be removed from here in future
             ]
         });
 
@@ -36,7 +38,7 @@ module.exports = class Routes {
         /**
          * @description Following route allows to access user photos uploaded by user
          */
-        
+
         app.get("/uploads/*", function (req, res, next) {
             var avatar = __dirname + "/../.." + req.url;
             var fname = path.basename(avatar);
@@ -52,7 +54,8 @@ module.exports = class Routes {
         /* REST Routes */
         UserRoutes.init(router);
         AuthenticationRoutes.init(router);
-
+        StartStopDayRouter.init(router);
+        
         app.use('/', router);
     }
 }

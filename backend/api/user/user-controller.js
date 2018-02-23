@@ -11,6 +11,7 @@ module.exports = class UserController {
         user.first_name = null;
         user.last_name = null;
         user.password = null;
+        user.address = null;
         user.phone = null;
         user.created_at = new Date().toISOString();
         user.updated_at = new Date().toISOString();
@@ -37,21 +38,25 @@ module.exports = class UserController {
 
     static updateUser(req, res) {
         let data = req.body;
+        console.log("req body",data);
         let user = {};
         //user._id = data._id;
         user.email = data.email;
-        user.first_name = (!!data.first_name) ? data.first_name : null;
-        user.last_name = (!!data.first_name) ? data.last_name : null;
+        user.first_name = (!!data.firstName) ? data.firstName : null;
+        user.last_name = (!!data.lastName) ? data.lastName : null;
         user.password = (!!data.password) ? CryptoJS.MD5(data.password).toString() : null;
         user.phone = (!!data.phone) ? data.phone : null;
+        user.address = (!!data.address) ? data.address :null;
         user.updated_at = new Date().toISOString();
 
-        User.find({_id:data._id})
+        User.find({_id:data.userId})
             .update(user)
-            .then((data) => {
+            .then((result) => {
+                console.log(result);
                 res.json({ success: true, data: data, error: {} })
             })
             .catch(e => {
+                console.log(e);
                 res.json({ success: false, error: e, data: {} })
             })
     }

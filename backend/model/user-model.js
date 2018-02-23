@@ -8,6 +8,7 @@ var Schema = mongoose.Schema,
     email: String,
     password:String,
     phone:String,
+    address:String,
     created_at:String,
     updated_at:String
 })
