@@ -16,7 +16,7 @@ module.exports = class StartStopDayController {
                 fs.mkdir(_qroot + '/public/' + userId);
             }
         });
-        
+
         fs.writeFile(_qroot + '/public/' + userId + "/start.jpg", base64Data, 'base64', function (err) {
             console.log(err);
             let daySummary = new DaySummary();
@@ -45,5 +45,44 @@ module.exports = class StartStopDayController {
 
     static stopDay(req, res) {
         let data = req.body;
+        let _qroot = process.cwd();
+        let base64 = data.base64;
+        let km = data.km;
+        let userId = data.userId;
+        let _id = data.id;
+        var base64Data = base64.replace(/^data:image\/jpg;base64,/, "");
+        console.log(req.body);
+        fs.exists(_qroot + '/public/' + userId, (data) => {
+            if (data === true) {
+                console.log("folder already exist");
+            } else {
+                fs.mkdir(_qroot + '/public/' + userId);
+            }
+        });
+
+        fs.writeFile(_qroot + '/public/' + userId + "/stop.jpg", base64Data, 'base64', function (err) {
+            console.log(err);
+            let daySummary = {};
+            daySummary.user_id = userId;
+            daySummary.end_time = new Date().toISOString();
+            daySummary.end_image = `${userId}/stop.jpg`;
+            daySummary.end_km = km;
+            daySummary.end_location = null;
+            daySummary.updated_at = new Date().toISOString();
+            console.log(daySummary);
+            console.log("id is ", _id);
+
+            DaySummary
+                .update({ _id: _id }, daySummary)
+                .then(data => {
+                    console.log("data", data);
+                    res.json({ success: true, data: data });
+                })
+                .catch(e => {
+                    res.json({ success: false, error: e })
+                })
+        });
+
     }
+
 }
