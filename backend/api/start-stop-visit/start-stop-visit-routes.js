@@ -8,5 +8,9 @@ module.exports = class StartStopVisitRoute {
         router
             .route('/api/stop-visit')
             .post(StartStopVisitController.stopVisit);
+
+        router
+            .route('/api/get-today-visits')
+            .post(StartStopVisitController.getTodayVisit);
     }
 }

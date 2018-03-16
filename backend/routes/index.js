@@ -30,7 +30,9 @@ module.exports = class Routes {
                 '/api/login',
                 '/api/update-user',
                 '/api/get-user-by-email',
-                '/api/add-user' // this will be removed from here in future
+                '/api/add-user', // this will be removed from here in future
+                '/api/stop-visit',
+                
             ]
         });
 
