@@ -12,5 +12,13 @@ module.exports = class StartStopVisitRoute {
         router
             .route('/api/get-today-visits')
             .post(StartStopVisitController.getTodayVisit);
+
+        router
+            .route('/api/update-order')
+            .post(StartStopVisitController.updateOrder);
+
+        router
+            .route('/api/add-order')
+            .post(StartStopVisitController.addOrder);
     }
 }
