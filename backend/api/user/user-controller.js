@@ -5,14 +5,16 @@ const key = require("../../config/secret.conf");
 module.exports = class UserController {
     static addUser(req, res) {
         console.log("key", key);
+		let body=req.body;
         let email = req.body.email;
         let user = new User();
         user.email = email;
-        user.first_name = null;
-        user.last_name = null;
+        user.first_name = body.firstName;
+        user.last_name = body.lastName;
         user.password = null;
         user.address = null;
-        user.phone = null;
+        user.phone = body.phone;
+		user.is_deleted=false;
         user.created_at = new Date().toISOString();
         user.updated_at = new Date().toISOString();
 
@@ -48,7 +50,7 @@ module.exports = class UserController {
         user.phone = (!!data.phone) ? data.phone : null;
         user.address = (!!data.address) ? data.address :null;
         user.updated_at = new Date().toISOString();
-
+		console.log('user',user);
         User.find({_id:data.userId})
             .update(user)
             .then((result) => {
@@ -72,13 +74,14 @@ module.exports = class UserController {
     }
 
     static deleteUser(req, res) {
-        User.deleteOne({ _id: req.body._id })
-            .then((data) => {
-                res.json({ success: true, data: data });
-            })
-            .catch(e => {
-                res.json({ success: false, error: e })
-            })
+		User.findOneAndUpdate({ _id: req.body.user._id }, {'is_deleted':true})
+                .then(data => {
+                    console.log("-----------------", data);
+					res.json({success:true,data:data});
+				})
+                .catch(e => {
+                    res.json({ success: false, error: e })
+                })
     }
 
     static getUserByEmailId(req, res) {

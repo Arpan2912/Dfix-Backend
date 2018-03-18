@@ -10,7 +10,8 @@ var Schema = mongoose.Schema,
     phone:String,
     address:String,
     created_at:String,
-    updated_at:String
+    updated_at:String,
+	is_deleted:Boolean
 })
 
 var User = mongoose.model('User', UserSchema);
