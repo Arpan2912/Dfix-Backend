@@ -20,5 +20,9 @@ module.exports = class StartStopVisitRoute {
         router
             .route('/api/add-order')
             .post(StartStopVisitController.addOrder);
+
+        router
+            .route('/api/delete-order')
+            .post(StartStopVisitController.deleteOrder);
     }
 }

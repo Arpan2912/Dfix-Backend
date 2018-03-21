@@ -103,7 +103,7 @@ module.exports = class StartStopVisitController {
                               console.log(data);
                               res.json({ success: true });
                         }).catch(e => {
-                              res.json({ success: false })
+                              res.json({ success: false, error: e });
                         })
 
                   })
@@ -113,6 +113,7 @@ module.exports = class StartStopVisitController {
       }
 
       static getTodayVisit(req, res) {
+            //@NOTE:Query to be update to get only today visits
             let userId = req.body.userId;
             let finalObj = [];
             console.log("user id", userId);
@@ -148,8 +149,11 @@ module.exports = class StartStopVisitController {
                                           })
                               })
                         }).then(data => {
-                              return res.json({ data: data });
+                              return res.json({ success: true, data: data });
                         })
+                              .catch(e => {
+                                    res.json({ success: false, error: e });
+                              })
                         //@NOTE:response
                         // {
                         //       "todayMeeting": {
@@ -182,6 +186,9 @@ module.exports = class StartStopVisitController {
                         //       ]
 
                   })
+                  .catch(e => {
+                        res.json({ success: false, error: e });
+                  })
       }
 
       static updateOrder(req, res) {
@@ -204,7 +211,7 @@ module.exports = class StartStopVisitController {
                         res.json({ success: true, data: data })
                   })
                   .catch(e => {
-
+                        res.json({ success: false, error: e });
                   })
       }
 
@@ -233,7 +240,22 @@ module.exports = class StartStopVisitController {
                         res.json({ success: true, data: data })
                   })
                   .catch(e => {
+                        res.json({ success: true, error: e });
+                  })
 
+      }
+
+      static deleteOrder(req, res) {
+            // let userId = req.body.userId;
+            let body = req.body;
+            let meetingId = body.orderId;
+
+            Order.deleteOne({ _id: meetingId })
+                  .then(data => {
+                        res.json({ success: true, data: data });
+                  })
+                  .catch(e => {
+                        res.json({ success: false, error: e });
                   })
 
       }
