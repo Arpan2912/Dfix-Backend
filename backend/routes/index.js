@@ -34,6 +34,8 @@ module.exports = class Routes {
                 '/api/get-user-by-email',
                 '/api/add-user', // this will be removed from here in future
                 '/api/stop-visit',
+				'/api/get-today-expense',
+				'/api/add-expense'
 
             ]
         });

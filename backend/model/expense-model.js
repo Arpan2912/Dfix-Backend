@@ -6,7 +6,8 @@ var Schema = mongoose.Schema,
         item_name: String,  
         expense_amount: String,
         created_at: String,
-        updated_at: String
+        updated_at: String,
+		description:String
     })
 
 var Expense = mongoose.model('Expense', ExpenseSchema);
