@@ -8,5 +8,14 @@ module.exports = class StartStopDayRoute {
         router
             .route('/api/stop-day')
             .post(StartStopDayController.stopDay);
+
+        router
+            .route('/api/get-start-day-details/:userId')
+            .get(StartStopDayController.getTodayStartDayDetails);
+
+        router
+            .route('/api/get-start-day-details/:userId')
+            .get(StartStopDayController.getTodayStartDayDetails);
     }
+
 }

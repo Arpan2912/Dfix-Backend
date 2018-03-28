@@ -11,6 +11,7 @@ module.exports = class StartStopDayController {
         let km = data.km;
         let userId = data.userId;
         let date = new Date().toISOString();
+        let newDate = moment(date).format("DDMMYYYYHHMM");
         var base64Data = base64.replace(/^data:image\/jpg;base64,/, "");
         console.log(req.body);
         fs.exists(_qroot + '/public/' + userId, (data) => {
@@ -21,12 +22,12 @@ module.exports = class StartStopDayController {
             }
         });
 
-        fs.writeFile(_qroot + '/public/' + userId + '/' + date + "start.jpg", base64Data, 'base64', function (err) {
+        fs.writeFile(_qroot + '/public/' + userId + '/' + newDate + "start.jpg", base64Data, 'base64', function (err) {
             console.log(err);
             let daySummary = new DaySummary();
             daySummary.user_id = userId;
             daySummary.start_time = date;
-            daySummary.start_image = `${userId}/${date}start.jpg`;
+            daySummary.start_image = `${userId}/${newDate}start.jpg`;
             daySummary.start_km = km;
             daySummary.start_location = null;
             daySummary.end_time = null;
@@ -55,6 +56,8 @@ module.exports = class StartStopDayController {
         let userId = data.userId;
         let _id = data.id;
         let date = new Date().toISOString();
+        let newDate = moment(date).format("DDMMYYYYHHMM");
+        // let newDate = moment(date).format("DD/MM/YYYY:HH:MM");
         let stopDayResult = null;
         var base64Data = base64.replace(/^data:image\/jpg;base64,/, "");
         console.log(req.body);
@@ -64,73 +67,78 @@ module.exports = class StartStopDayController {
             } else {
                 fs.mkdir(_qroot + '/public/' + userId);
             }
+
+            fs.writeFile(_qroot + '/public/' + userId + "/"+newDate+"stop.jpg", base64Data, 'base64', function (err) {
+                console.log(err);
+                let daySummary = {};
+                daySummary.user_id = userId;
+                daySummary.end_time = date;
+                daySummary.end_image = `${userId}/${newDate}stop.jpg`;
+                daySummary.end_km = km;
+                daySummary.end_location = null;
+                daySummary.updated_at = new Date().toISOString();
+                console.log(daySummary);
+                console.log("id is ", _id);
+
+                DaySummary
+                    .findOneAndUpdate({ _id: _id }, daySummary, { new: true })
+                    .then(data => {
+                        stopDayResult = data;
+                        console.log("data", data);
+
+                        var startTime = moment(data.start_time);
+                        var endTime = moment(data.end_time);
+                        let diff = endTime.diff(startTime, 'minutes') // 86400000
+                        console.log(diff);
+                        let attandance;
+                        if (diff >= 480) {
+                            attandance = 'P'
+                        } else if (diff >= 240) {
+                            attandance = 'HL'
+                        } else {
+                            attandance = 'A'
+                        }
+
+                        let attandanceObj = new Attandance();
+                        attandanceObj.user_id = userId;
+                        attandanceObj.attandance = attandance;
+                        attandanceObj.date = new Date().toISOString();
+                        attandanceObj.created_at = new Date().toISOString();
+                        attandanceObj.updated_at = new Date().toISOString();
+
+                        return attandanceObj.save()
+
+                    })
+                    .then(result => {
+                        console.log("data", result);
+                        console.log('attandance updated');
+                        res.json({ success: true, data: stopDayResult });
+                    })
+                    .catch(e => {
+                        res.json({ success: false, error: e })
+                    })
+            });
         });
 
-        fs.writeFile(_qroot + '/public/' + userId + '/' + date + "stop.jpg", base64Data, 'base64', function (err) {
-            console.log(err);
-            let daySummary = {};
-            daySummary.user_id = userId;
-            daySummary.end_time = date;
-            daySummary.end_image = `${userId}/${date}stop.jpg`;
-            daySummary.end_km = km;
-            daySummary.end_location = null;
-            daySummary.updated_at = new Date().toISOString();
-            console.log(daySummary);
-            console.log("id is ", _id);
+    }
 
-            DaySummary
-                .findOneAndUpdate({ _id: _id }, daySummary, { new: true })
-                .then(data => {
-                    stopDayResult = data;
-                    console.log("data", data);
-                    /*
-                 data=   _id: 5a96cdc985dc5e1978af3f03,
-  user_id: '5a8810ab52841cd399c5ac52',
-  start_time: '2018-02-28T15:42:01.579Z',
-  start_image: '5a8810ab52841cd399c5ac52/start.jpg',
-  start_km: ' 10',
-  start_location: null,
-  end_time: '2018-02-28T15:42:18.448Z',
-  end_image: '5a8810ab52841cd399c5ac52/stop.jpg',
-  end_km: ' 25',
-  end_location: null,
-  created_at: '2018-02-28T15:42:01.580Z',
-  updated_at: '2018-02-28T15:42:18.448Z',
-                    */
-                    // let startTime = data.start_time;
-                    // let endTime = data.end_time;
-                    var startTime = moment(data.start_time);
-                    var endTime = moment(data.end_time);
-                    let diff = endTime.diff(startTime, 'minutes') // 86400000
-                    console.log(diff);
-                    let attandance;
-                    if (diff >= 480) {
-                        attandance = 'P'
-                    } else if (diff >= 240) {
-                        attandance = 'HL'
-                    } else {
-                        attandance = 'A'
-                    }
-
-                    let attandanceObj = new Attandance();
-                    attandanceObj.user_id = userId;
-                    attandanceObj.attandance = attandance;
-                    attandanceObj.date = new Date().toISOString();
-                    attandanceObj.created_at = new Date().toISOString();
-                    attandanceObj.updated_at = new Date().toISOString();
-
-                    return attandanceObj.save()
-
-                })
-                .then(result => {
-                    console.log("data", result);
-                    console.log('attandance updated');
-                    res.json({ success: true, data: stopDayResult });
-                })
-                .catch(e => {
-                    res.json({ success: false, error: e })
-                })
-        });
+    static getTodayStartDayDetails(req, res) {
+        let userId = req.params.userId;
+        console.log("userID", userId);
+        let date = new Date();
+        date.setHours(0, 0, 0, 0);
+        date = date.toISOString();
+        DaySummary.find({ user_id: userId, start_time: { $gt: date } })
+            .then(data => {
+                console.log("data", data, "userID", userId);
+                if (data.length > 0)
+                    res.json({ success: true, data: data[0] });
+                else
+                    res.json({ success: true, data: null });
+            })
+            .catch(e => {
+                res.json({ success: false, error: 'something went wrong' });
+            })
 
     }
 

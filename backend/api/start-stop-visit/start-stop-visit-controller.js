@@ -260,4 +260,26 @@ module.exports = class StartStopVisitController {
 
       }
 
+      static getTodayLastRunningVisit(req, res) {
+            let userId = req.params.userId;
+            console.log("userID", userId);
+            let date = new Date();
+            date.setHours(0, 0, 0, 0);
+            date = date.toISOString();
+            Meeting.find({ user_id: userId, start_time: { $gt: date },end_time:null })
+                  .then(data => {
+                        console.log("data", data, "userID", userId);
+                        if (data.length > 0) {
+                              let lastVisit = data.length-1;
+                              res.json({ success: true, data: data[lastVisit] });
+                        }
+                        else
+                              res.json({ success: true, data: null });
+                  })
+                  .catch(e => {
+                        res.json({ success: false, error: 'something went wrong' });
+                  })
+
+      }
+
 }

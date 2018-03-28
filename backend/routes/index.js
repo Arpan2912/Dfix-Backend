@@ -13,6 +13,7 @@ const AuthenticationRoutes = require('../api/authenticate/authenticate-routes');
 const StartStopDayRouter = require('../api/start-stop-day/start-stop-day-router');
 const StartStopVisitRouter = require('../api/start-stop-visit/start-stop-visit-routes');
 const ExpenseRouter = require('../api/expense/expense-routes');
+const LocationRouter = require('../api/location/location-routes');
 
 /* Commons */
 // const StaticDispatcher = require('../commons/static/index');
@@ -64,6 +65,7 @@ module.exports = class Routes {
         StartStopDayRouter.init(router);
         StartStopVisitRouter.init(router);
         ExpenseRouter.init(router);
+        LocationRouter.init(router);
 
         app.use('/', router);
     }

@@ -24,5 +24,9 @@ module.exports = class StartStopVisitRoute {
         router
             .route('/api/delete-order')
             .post(StartStopVisitController.deleteOrder);
+
+        router
+            .route('/api/get-today-last-running-meeting/:userId')
+            .get(StartStopVisitController.getTodayLastRunningVisit);
     }
 }
