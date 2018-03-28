@@ -13,6 +13,7 @@ module.exports = class StartStopVisitController {
             let base64 = data.base64;
             let location = data.location;
             let userId = data.userId;
+            let userName = data.userName;
             let orgName = data.orgName;
             let date = new Date().toISOString();
             var base64Data = base64.replace(/^data:image\/jpg;base64,/, "");
@@ -39,6 +40,7 @@ module.exports = class StartStopVisitController {
                          */
                         let meeting = new Meeting();
                         meeting.user_id = userId;
+                        meeting.user_name = userName;
                         meeting.start_time = date;
                         meeting.org_image = `${userId}/${date}startVisit.jpg`;
                         meeting.org_name = orgName;
@@ -266,11 +268,11 @@ module.exports = class StartStopVisitController {
             let date = new Date();
             date.setHours(0, 0, 0, 0);
             date = date.toISOString();
-            Meeting.find({ user_id: userId, start_time: { $gt: date },end_time:null })
+            Meeting.find({ user_id: userId, start_time: { $gt: date }, end_time: null })
                   .then(data => {
                         console.log("data", data, "userID", userId);
                         if (data.length > 0) {
-                              let lastVisit = data.length-1;
+                              let lastVisit = data.length - 1;
                               res.json({ success: true, data: data[lastVisit] });
                         }
                         else

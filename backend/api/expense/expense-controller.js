@@ -9,6 +9,7 @@ module.exports = class ExpenseController {
             let data = req.body;
             let userId = data.userId;
             let itemName = data.itemName;
+            let userName =data.userName;
             let description = data.description;
             let expenseAmount = data.expenseAmount;
 
@@ -16,6 +17,7 @@ module.exports = class ExpenseController {
             let expense = new Expense();
             expense.user_id = userId;
             expense.item_name = itemName;
+            expense.user_name = userName;
             expense.description = description;
             expense.expense_amount = expenseAmount
             expense.created_at = new Date().toISOString();

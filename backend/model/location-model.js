@@ -3,6 +3,7 @@ var Schema = mongoose.Schema,
 
     LocationSchema = new Schema({
         user_id: String,
+        user_name:String,
         date: String,
         location: Object,
         created_at: String,

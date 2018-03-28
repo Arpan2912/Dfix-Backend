@@ -5,6 +5,7 @@ module.exports = class LocationController {
     static addOrUpdateUserLocation(req, res) {
         let body = req.body;
         let userId = body.userId;
+        let userName = body.userName;
         let location = body.location;
         let currentLocation = body.currentLocation;
         let id = body.id;
@@ -14,6 +15,7 @@ module.exports = class LocationController {
             obj._id = id;
         }
         obj.user_id = userId;
+        obj.user_name = userName;
         obj.location = location;
         obj.current_location = currentLocation;
         obj.created_at = new Date().toISOString();
@@ -41,6 +43,7 @@ module.exports = class LocationController {
             let obj = new Location();
 
             obj.user_id = userId;
+            obj.user_name =userName;
             obj.location = location;
             obj.current_location = currentLocation;
             obj.created_at = new Date().toISOString();

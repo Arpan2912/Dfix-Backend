@@ -14,6 +14,7 @@ module.exports = class AuthenticationController {
                     let token = jwt.sign({ userId: user[0]._id }, key.secret)
                     data = {
                         userId: user[0]._id,
+                        userName:user[0].first_name + user[0].last_name,
                         token: token
                     }
                     res.json({ "success": true, data: data });

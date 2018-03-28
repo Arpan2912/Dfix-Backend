@@ -3,6 +3,7 @@ var Schema = mongoose.Schema,
 
     MeetingSchema = new Schema({
         user_id: String,
+        user_name:String,
         start_time: String,
         org_image: String,
         org_name: String,
