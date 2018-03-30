@@ -34,13 +34,13 @@ module.exports = class ExpenseController {
       static updateExpense(req, res) {
             // let userId = req.body.userId;
             let body = req.body;
-            let itemName = body.itemName;
+            let userName = body.userName;
             let expenseAmount = body.expenseAmount;
             let expenseId = body._id;
             let updatedObj = {
-                  item_name: itemName,
+                  user_name: userName,
                   expense_amount: expenseAmount,
-                  description:description,
+                  description:req.body.description,
                   updated_at: new Date().toISOString()
             }
             let orderObj = req.body.orderObj;
@@ -68,13 +68,20 @@ module.exports = class ExpenseController {
                   })
 
       }
-
       static getTodayExpense(req, res) {
             //@NOTE:Query to be update to get only today visits
             let userId = req.body.userId;
             let finalObj = [];
             console.log("user id", userId);
             Expense.find({ user_id: userId })
+                  .then(data => {
+                        return res.json({ success: true, data: data });
+                  }).catch(e => {
+                        res.json({ success: false, error: e });
+                  })
+      }
+      static getExpense(req, res) {
+            Expense.find()
                   .then(data => {
                         return res.json({ success: true, data: data });
                   }).catch(e => {

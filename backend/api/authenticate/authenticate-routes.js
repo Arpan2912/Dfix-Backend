@@ -4,5 +4,8 @@ module.exports = class AuthenticationRoute {
         router
             .route('/api/login')
             .post(AuthenticationController.authenticateUser);
+          router
+          .route('/api/admin')
+          .post(AuthenticationController.authenticateAdmin);
     }
 }

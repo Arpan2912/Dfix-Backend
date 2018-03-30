@@ -16,5 +16,9 @@ module.exports = class ExpenseRoute {
         router
             .route('/api/get-today-expense')
             .post(ExpenseController.getTodayExpense);
+
+            router
+            .route('/api/getExpense')
+            .get(ExpenseController.getExpense)
     }
 }
