@@ -5,19 +5,23 @@ const moment = require('moment');
 
 module.exports = class StartStopDayController {
     static startDay(req, res) {
+      console.log("--------------------------");
+      console.log(req.body);
         let data = req.body;
         let _qroot = process.cwd();
         let base64 = data.base64;
         let km = data.km;
+        let name=data.user_name;
         let userId = data.userId;
         let date = new Date().toISOString();
         let newDate = moment(date).format("DDMMYYYYHHMM");
         var base64Data = base64.replace(/^data:image\/jpg;base64,/, "");
-        console.log(req.body);
+        console.log(_qroot);
         fs.exists(_qroot + '/public/' + userId, (data) => {
             if (data === true) {
                 console.log("folder already exist");
             } else {
+              console.log("here");
                 fs.mkdir(_qroot + '/public/' + userId);
             }
         });
@@ -30,6 +34,7 @@ module.exports = class StartStopDayController {
             daySummary.start_image = `${userId}/${newDate}start.jpg`;
             daySummary.start_km = km;
             daySummary.start_location = null;
+            daySummary.user_name=name;
             daySummary.end_time = null;
             daySummary.end_image = null;
             daySummary.end_km = null;
@@ -60,7 +65,6 @@ module.exports = class StartStopDayController {
         // let newDate = moment(date).format("DD/MM/YYYY:HH:MM");
         let stopDayResult = null;
         var base64Data = base64.replace(/^data:image\/jpg;base64,/, "");
-        console.log(req.body);
         fs.exists(_qroot + '/public/' + userId, (data) => {
             if (data === true) {
                 console.log("folder already exist");
@@ -140,6 +144,14 @@ module.exports = class StartStopDayController {
                 res.json({ success: false, error: 'something went wrong' });
             })
 
+    }
+    static getDaySummary(req, res) {
+          DaySummary.find()
+                .then(data => {
+                      return res.json({ success: true, data: data });
+                }).catch(e => {
+                      res.json({ success: false, error: e });
+                })
     }
 
 }

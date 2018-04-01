@@ -3,6 +3,7 @@ var Schema = mongoose.Schema,
 
     StartStopDaySchema = new Schema({
         user_id: String,
+        user_name:String,
         start_time: String,
         start_image: String,
         start_km: String,
