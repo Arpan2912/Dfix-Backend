@@ -8,7 +8,8 @@ var Schema = mongoose.Schema,
         expense_amount: String,
         created_at: String,
         updated_at: String,
-		description:String
+        description:String,
+        image_url:String
     })
 
 var Expense = mongoose.model('Expense', ExpenseSchema);
