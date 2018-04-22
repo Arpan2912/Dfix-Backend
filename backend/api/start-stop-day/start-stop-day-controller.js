@@ -2,16 +2,17 @@ const DaySummary = require('../../model/start-stop-day-model');
 const Attandance = require('../../model/attandance-model');
 const fs = require('fs');
 const moment = require('moment');
+const Utils = require("../../commons/utils");
 
 module.exports = class StartStopDayController {
     static startDay(req, res) {
-      console.log("--------------------------");
-      console.log(req.body);
+        console.log("--------------------------");
+        console.log(req.body);
         let data = req.body;
         let _qroot = process.cwd();
         let base64 = data.base64;
         let km = data.km;
-        let name=data.user_name;
+        let name = data.user_name;
         let userId = data.userId;
         let date = new Date().toISOString();
         let newDate = moment(date).format("DDMMYYYYHHMM");
@@ -21,34 +22,35 @@ module.exports = class StartStopDayController {
             if (data === true) {
                 console.log("folder already exist");
             } else {
-              console.log("here");
+                console.log("here");
                 fs.mkdir(_qroot + '/public/' + userId);
             }
-        });
 
-        fs.writeFile(_qroot + '/public/' + userId + '/' + newDate + "start.jpg", base64Data, 'base64', function (err) {
-            console.log(err);
-            let daySummary = new DaySummary();
-            daySummary.user_id = userId;
-            daySummary.start_time = date;
-            daySummary.start_image = `${userId}/${newDate}start.jpg`;
-            daySummary.start_km = km;
-            daySummary.start_location = null;
-            daySummary.user_name=name;
-            daySummary.end_time = null;
-            daySummary.end_image = null;
-            daySummary.end_km = null;
-            daySummary.end_location = null;
-            daySummary.created_at = date;
-            daySummary.updated_at = date;
 
-            daySummary.save()
-                .then((data => {
-                    res.json({ success: true, data: data });
-                }))
-                .catch((e => {
-                    res.json({ success: false, error: e })
-                }))
+            fs.writeFile(_qroot + '/public/' + userId + '/' + newDate + "start.jpg", base64Data, 'base64', function (err) {
+                console.log(err);
+                let daySummary = new DaySummary();
+                daySummary.user_id = userId;
+                daySummary.start_time = date;
+                daySummary.start_image = `${userId}/${newDate}start.jpg`;
+                daySummary.start_km = km;
+                daySummary.start_location = null;
+                daySummary.user_name = name;
+                daySummary.end_time = null;
+                daySummary.end_image = null;
+                daySummary.end_km = null;
+                daySummary.end_location = null;
+                daySummary.created_at = date;
+                daySummary.updated_at = date;
+
+                daySummary.save()
+                    .then((data => {
+                        res.json({ success: true, data: data });
+                    }))
+                    .catch((e => {
+                        res.json({ success: false, error: e })
+                    }))
+            });
         });
 
     }
@@ -72,7 +74,7 @@ module.exports = class StartStopDayController {
                 fs.mkdir(_qroot + '/public/' + userId);
             }
 
-            fs.writeFile(_qroot + '/public/' + userId + "/"+newDate+"stop.jpg", base64Data, 'base64', function (err) {
+            fs.writeFile(_qroot + '/public/' + userId + "/" + newDate + "stop.jpg", base64Data, 'base64', function (err) {
                 console.log(err);
                 let daySummary = {};
                 daySummary.user_id = userId;
@@ -129,9 +131,10 @@ module.exports = class StartStopDayController {
     static getTodayStartDayDetails(req, res) {
         let userId = req.params.userId;
         console.log("userID", userId);
-        let date = new Date();
-        date.setHours(0, 0, 0, 0);
-        date = date.toISOString();
+        // let date = new Date();
+        let date = Utils.getIndianDayStartTimeInIsoFormat();
+        // date.setHours(0, 0, 0, 0);
+        // date = date.toISOString();
         DaySummary.find({ user_id: userId, start_time: { $gt: date } })
             .then(data => {
                 console.log("data", data, "userID", userId);
@@ -146,12 +149,12 @@ module.exports = class StartStopDayController {
 
     }
     static getDaySummary(req, res) {
-          DaySummary.find()
-                .then(data => {
-                      return res.json({ success: true, data: data });
-                }).catch(e => {
-                      res.json({ success: false, error: e });
-                })
+        DaySummary.find()
+            .then(data => {
+                return res.json({ success: true, data: data });
+            }).catch(e => {
+                res.json({ success: false, error: e });
+            })
     }
 
 }

@@ -4,6 +4,8 @@ const Attandance = require('../../model/attandance-model');
 const fs = require('fs');
 const moment = require('moment');
 const bluebird = require("bluebird");
+const momentTimezone = require('moment-timezone');
+const Utils = require("../../commons/utils");
 
 module.exports = class StartStopVisitController {
       static startVisit(req, res) {
@@ -118,8 +120,11 @@ module.exports = class StartStopVisitController {
             //@NOTE:Query to be update to get only today visits
             let userId = req.body.userId;
             let finalObj = [];
-            console.log("user id", userId);
-            Meeting.find({ user_id: userId })
+
+            let date = Utils.getIndianDayStartTimeInIsoFormat();
+
+            console.log("user id", userId, "date", date);
+            Meeting.find({ user_id: userId, created_at: { $gt: date } })
                   .then(todayMeetings => {
                         // console.log("data", todayMeetings);
                         bluebird.map(todayMeetings, function (todayMeeting) {
