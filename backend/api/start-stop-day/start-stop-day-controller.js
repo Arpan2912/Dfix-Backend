@@ -125,7 +125,21 @@ module.exports = class StartStopDayController {
         });
 
     }
-
+    static resetEndTime(req,res){
+      let _id=req.body._id;
+      DaySummary.findById(_id)
+        .then(day => {
+          console.log(day);
+          day.end_time=null;
+          day.end_image=null;
+          day.end_km=null;
+            //user.nhsSys = nhsSys;
+            return day.save()
+                .then((day) => {
+                    res.status(200).json(day);
+                })
+        });
+    }
     static getTodayStartDayDetails(req, res) {
         let userId = req.params.userId;
         console.log("userID", userId);

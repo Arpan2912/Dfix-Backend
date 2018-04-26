@@ -20,6 +20,9 @@ module.exports = class StartStopDayRoute {
             router
             .route('/api/get-day-summary')
             .get(StartStopDayController.getDaySummary)
+            router
+            .route('/api/resetEndTime')
+            .post(StartStopDayController.resetEndTime)
     }
 
 }

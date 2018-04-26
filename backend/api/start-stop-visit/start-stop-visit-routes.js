@@ -28,5 +28,11 @@ module.exports = class StartStopVisitRoute {
         router
             .route('/api/get-today-last-running-meeting/:userId')
             .get(StartStopVisitController.getTodayLastRunningVisit);
+        router
+            .route('/api/getMeetings')
+            .get(StartStopVisitController.getMeetings)
+            router
+            .route('/api/getOrders')
+            .get(StartStopVisitController.getOrders)
     }
 }

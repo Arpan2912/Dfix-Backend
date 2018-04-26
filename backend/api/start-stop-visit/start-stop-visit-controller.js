@@ -192,6 +192,14 @@ module.exports = class StartStopVisitController {
                         res.json({ success: false, error: e });
                   })
       }
+      static getMeetings(req, res) {
+        Meeting.find()
+              .then(data => {
+                    return res.json({ success: true, data: data });
+              }).catch(e => {
+                    res.json({ success: false, error: e });
+              })
+      }
 
       static updateOrder(req, res) {
             // let userId = req.body.userId;
@@ -215,6 +223,15 @@ module.exports = class StartStopVisitController {
                   .catch(e => {
                         res.json({ success: false, error: e });
                   })
+      }
+      static getOrders(req,res){
+        Order.find()
+              .then(data => {
+                    res.json({ success: true, data: data });
+              })
+              .catch(e => {
+                    res.json({ success: false, error: e });
+              })
       }
 
       static addOrder(req, res) {
@@ -246,7 +263,6 @@ module.exports = class StartStopVisitController {
                   })
 
       }
-
       static deleteOrder(req, res) {
             // let userId = req.body.userId;
             let body = req.body;

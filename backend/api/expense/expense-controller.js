@@ -21,7 +21,7 @@ module.exports = class ExpenseController {
             expense.user_id = userId;
             // expense.item_name = itemName;
             expense.user_name = userName;
-          
+
             expense.description = description;
             expense.expense_amount = expenseAmount;
             expense.created_at = new Date().toISOString();
@@ -30,7 +30,7 @@ module.exports = class ExpenseController {
             let date = new Date().toISOString();
             let newDate = moment(date).format("DDMMYYYYHHMM");
             var base64Data = base64.replace(/^data:image\/jpg;base64,/, "");
-            console.log(req.body);
+            //console.log(req.body);
             fs.exists(_qroot + '/public/' + userId, (data) => {
                 if (data === true) {
                     console.log("folder already exist");
@@ -38,11 +38,11 @@ module.exports = class ExpenseController {
                     fs.mkdir(_qroot + '/public/' + userId);
                 }
             });
-    
+
             fs.writeFile(_qroot + '/public/' + userId + '/' + newDate + "ex.jpg", base64Data, 'base64', function (err) {
                   if(err){
                         return res.json({success:false,error:err});
-                  } 
+                  }
                   expense.image_url =  userId + '/' + newDate + "ex.jpg";
             expense.save()
                   .then(data => {
