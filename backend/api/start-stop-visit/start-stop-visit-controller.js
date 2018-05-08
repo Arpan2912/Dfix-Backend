@@ -18,6 +18,7 @@ module.exports = class StartStopVisitController {
             let userName = data.userName;
             let orgName = data.orgName;
             let date = new Date().toISOString();
+            let newDate = moment(date).format("DDMMYYYYHHMM");
             var base64Data = base64.replace(/^data:image\/jpg;base64,/, "");
             console.log(req.body);
             fs.exists(_qroot + '/public/' + userId, (data) => {
@@ -28,7 +29,7 @@ module.exports = class StartStopVisitController {
                   }
 
 
-                  fs.writeFile(_qroot + '/public/' + userId + '/' + date + "startVisit.jpg", base64Data, 'base64', function (err) {
+                  fs.writeFile(_qroot + '/public/' + userId + '/' + newDate + "startVisit.jpg", base64Data, 'base64', function (err) {
                         console.log(err);
 
                         /**
@@ -44,7 +45,7 @@ module.exports = class StartStopVisitController {
                         meeting.user_id = userId;
                         meeting.user_name = userName;
                         meeting.start_time = date;
-                        meeting.org_image = `${userId}/${date}startVisit.jpg`;
+                        meeting.org_image = `${userId}/${newDate}startVisit.jpg`;
                         meeting.org_name = orgName;
                         meeting.org_location = location;
                         meeting.end_time = null;

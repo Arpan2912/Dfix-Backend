@@ -29,7 +29,7 @@ module.exports = class ExpenseController {
             expense.updated_at = new Date().toISOString();
 
             let date = new Date().toISOString();
-            let newDate = moment(date).format("DDMMYYYYHHMM");
+            let newDate = moment(date).format("DDMMYYYYHHMMSS");
             var base64Data = base64.replace(/^data:image\/jpg;base64,/, "");
             console.log(req.body);
             fs.exists(_qroot + '/public/' + userId, (data) => {
