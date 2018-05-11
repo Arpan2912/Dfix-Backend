@@ -63,7 +63,7 @@ module.exports = class ExpenseController {
             let expenseAmount = body.expenseAmount;
             let expenseId = body._id;
             let updatedObj = {
-                  user_name: userName,
+                  // user_name: userName,
                   expense_amount: expenseAmount,
                   description: req.body.description,
                   updated_at: new Date().toISOString()
