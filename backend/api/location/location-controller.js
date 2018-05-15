@@ -58,6 +58,12 @@ module.exports = class LocationController {
         }
 
     }
+    static getCurrentLocation(req,res){
+      Location.find().then(data=>{
+        return  res.json([{"success":true,"data":data}]);
+      }).catch(e=>{
+        return res.json({success:false,data:e})
+      })
+    }
 
 }
-

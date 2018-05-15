@@ -4,6 +4,8 @@ const Attandance = require('../../model/attandance-model');
 const fs = require('fs');
 const moment = require('moment');
 const bluebird = require("bluebird");
+const momentTimezone = require('moment-timezone');
+const Utils = require("../../commons/utils");
 
 module.exports = class StartStopVisitController {
       static startVisit(req, res) {
@@ -16,6 +18,7 @@ module.exports = class StartStopVisitController {
             let userName = data.userName;
             let orgName = data.orgName;
             let date = new Date().toISOString();
+            let newDate = moment(date).format("DDMMYYYYHHMM");
             var base64Data = base64.replace(/^data:image\/jpg;base64,/, "");
             console.log(req.body);
             fs.exists(_qroot + '/public/' + userId, (data) => {
@@ -26,7 +29,7 @@ module.exports = class StartStopVisitController {
                   }
 
 
-                  fs.writeFile(_qroot + '/public/' + userId + '/' + date + "startVisit.jpg", base64Data, 'base64', function (err) {
+                  fs.writeFile(_qroot + '/public/' + userId + '/' + newDate + "startVisit.jpg", base64Data, 'base64', function (err) {
                         console.log(err);
 
                         /**
@@ -42,7 +45,7 @@ module.exports = class StartStopVisitController {
                         meeting.user_id = userId;
                         meeting.user_name = userName;
                         meeting.start_time = date;
-                        meeting.org_image = `${userId}/${date}startVisit.jpg`;
+                        meeting.org_image = `${userId}/${newDate}startVisit.jpg`;
                         meeting.org_name = orgName;
                         meeting.org_location = location;
                         meeting.end_time = null;
@@ -118,8 +121,11 @@ module.exports = class StartStopVisitController {
             //@NOTE:Query to be update to get only today visits
             let userId = req.body.userId;
             let finalObj = [];
-            console.log("user id", userId);
-            Meeting.find({ user_id: userId })
+
+            let date = Utils.getIndianDayStartTimeInIsoFormat();
+
+            console.log("user id", userId, "date", date);
+            Meeting.find({ user_id: userId, created_at: { $gt: date } })
                   .then(todayMeetings => {
                         // console.log("data", todayMeetings);
                         bluebird.map(todayMeetings, function (todayMeeting) {

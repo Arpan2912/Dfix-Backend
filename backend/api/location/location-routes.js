@@ -4,7 +4,9 @@ module.exports = class LocationRoutes {
         router
             .route('/api/add-user-location')
             .post(LocationController.addOrUpdateUserLocation);
-
+            router
+            .route('/api/getCurrentLocation')
+            .get(LocationController.getCurrentLocation);
 
     }
 }

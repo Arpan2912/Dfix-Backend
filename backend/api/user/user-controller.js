@@ -66,7 +66,7 @@ module.exports = class UserController {
     static getAllUser(req, res) {
         User.find()
             .then(data => {
-                res.json({ data: data })
+                res.json([{ data: data }])
             })
             .catch(e => {
                 res.json({ error: e })
@@ -101,4 +101,3 @@ module.exports = class UserController {
             })
     }
 }
-

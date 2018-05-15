@@ -44,10 +44,7 @@ module.exports = class Routes {
                 '/api/delete-expense',
                 '/api/stop-day',
                 '/api/get-day-summary',
-                '/api/resetEndTime',
-                '/api/getMeetings',
-                '/api/start-visit',
-                '/api/getOrders'
+                '/api/get-today-visits'
 
             ]
         });
