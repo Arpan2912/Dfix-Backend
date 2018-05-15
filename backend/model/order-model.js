@@ -4,6 +4,8 @@ var Schema = mongoose.Schema,
     OrderSchema = new Schema({
         user_id: String,
         item_name: String,
+        org_name:String,
+        user_name:String,
         item_quantity: String,
         item_price: String,
         meeting_id: String,

@@ -54,6 +54,7 @@ module.exports = class StartStopVisitController {
 
                         meeting.save()
                               .then((data => {
+                                    data.orgName = orgName;
                                     res.json({ success: true, data: data });
                               }))
                               .catch((e => {
@@ -66,11 +67,13 @@ module.exports = class StartStopVisitController {
 
       static stopVisit(req, res) {
             let data = req.body;
+            console.log('data',data)
             let orderArray = data.orderArray;
             let userId = data.userId;
             let meetingId = data.id;
             let stopDayResult = null;
-
+            let orgName = data.orgName;
+            let userName = data.userName;
             // console.log(err);
             let endMeeting = {};
             endMeeting.user_id = userId;
@@ -88,6 +91,8 @@ module.exports = class StartStopVisitController {
                                     let obj = {};
                                     if (orderData && orderData.itemName && orderData.itemPrice && orderData.itemQuantity) {
                                           obj.user_id = userId;
+                                          obj.user_name = userName;
+                                          obj.org_name = orgName;
                                           obj.item_name = orderData.itemName || null;
                                           obj.item_quantity = orderData.itemQuantity || null;
                                           obj.item_price = orderData.itemPrice || null;
@@ -102,7 +107,7 @@ module.exports = class StartStopVisitController {
                                     }
                               })
                         }).then(data => {
-                              console.log(data);
+                              console.log("finalOrderArray",finalOrderArray);
                               return Order.insertMany(finalOrderArray);
                         }).then(data => {
                               console.log(data);
@@ -247,6 +252,8 @@ module.exports = class StartStopVisitController {
             let itemPrice = body.itemPrice;
             let itemQuantity = body.itemQuantity;
             let meetingId = body.meetingId;
+            let userName = body.userName;
+            let orgName = body.orgName;
 
             let updatedObj = new Order();
 
@@ -255,6 +262,8 @@ module.exports = class StartStopVisitController {
             updatedObj.item_quantity = itemQuantity;
             updatedObj.user_id = userId;
             updatedObj.meeting_id = meetingId;
+            updatedObj.user_name =userName;
+            updatedObj.org_name = orgName;
             updatedObj.created_at = new Date().toISOString();
             updatedObj.updated_at = new Date().toISOString();
 
