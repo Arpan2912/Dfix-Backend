@@ -33,6 +33,7 @@ module.exports = class Routes {
                 '/api/login',
                 '/api/update-user',
                 '/api/get-user-by-email',
+                '/api/get-user-by-phone',
                 '/api/add-user', // this will be removed from here in future
                 '/api/stop-visit',
         				'/api/get-today-expense',

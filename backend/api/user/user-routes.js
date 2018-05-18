@@ -21,5 +21,9 @@ module.exports = class UserRoutes {
         router
             .route('/api/get-user-by-email')
             .post(UserController.getUserByEmailId);
+
+        router
+            .route('/api/get-user-by-phone')
+            .post(UserController.getUserByPhone);
     }
 }

@@ -7,9 +7,10 @@ module.exports = class AuthenticationController {
   static authenticateUser(req, res) {
     console.log("body", req.body)
     let email = req.body.email;
+    let phone = req.body.phone;
     let password = CryptoJS.MD5(req.body.password).toString();
     User.find({
-        email: email,
+      phone: phone,
         password: password
       })
       .then((user) => {
@@ -39,10 +40,10 @@ module.exports = class AuthenticationController {
     // })
   }
   static authenticateAdmin(req, res) {
-    let email = req.body.email;
+    let phone = req.body.phone;
     let password = CryptoJS.MD5(req.body.password).toString();
     Admin.find({
-      email: email,
+      phone: phone,
       password: password
     }).
     then((user) =>{
