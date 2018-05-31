@@ -8,6 +8,11 @@ const momentTimezone = require('moment-timezone');
 const Utils = require("../../commons/utils");
 
 module.exports = class StartStopVisitController {
+     /**
+      * store image on local machine
+      * @param {*} req 
+      * @param {*} res 
+      */
       static startVisit(req, res) {
             let data = req.body;
             console.log(data);
@@ -65,9 +70,89 @@ module.exports = class StartStopVisitController {
 
       }
 
+      /**
+       * store image using s3
+       * @param {*} req 
+       * @param {*} res 
+       */
+      static startVisit1(req, res) {
+            let data = req.body;
+            console.log(data);
+            let _qroot = process.cwd();
+            let base64 = data.base64;
+            let location = data.location;
+            let userId = data.userId;
+            let userName = data.userName;
+            let orgName = data.orgName;
+            let date = new Date().toISOString();
+            let newDate = moment(date).format("DDMMYYYYHHMM");
+            let imageType = Utils.extractExtension(base64);
+            var base64Data = base64.replace(/^data:image\/jpg;base64,/, "");
+            let imgData = new Buffer(base64Data, 'base64');
+            Utils.uploadImageOnAmazonS3('d-fix', `${userId}/${newDate}startVisit.jpg`, imgData, imageType, userId)
+                  .then(data => {
+                        // let resObj =
+                        //     {
+                        //         ETag: '"bb0cd586e3c8b0bffcaf0637cbe28421"',
+                        //         Location: 'https://liit-staging-nikunj.s3.amazonaws.com/1/product/product2',
+                        //         key: '1/product/product2',
+                        //         Key: '1/product/product2',
+                        //         Bucket: 'liit-staging-nikunj'
+                        //     }
+                        console.log(req.body);
+                        console.log(data);
+                        // fs.exists(_qroot + '/public/' + userId, (data) => {
+                        //       if (data === true) {
+                        //             console.log("folder already exist");
+                        //       } else {
+                        //             fs.mkdir(_qroot + '/public/' + userId);
+                        //       }
+
+
+                        // fs.writeFile(_qroot + '/public/' + userId + '/' + newDate + "startVisit.jpg", base64Data, 'base64', function (err) {
+                        // console.log(err);
+
+                        /**
+                         *  user_id: String,
+                    start_time: String,
+                    org_image: String,
+                    org_location: String,
+                    end_time: String,
+                    created_at: String,
+                    updated_at: String
+                         */
+                        let meeting = new Meeting();
+                        meeting.user_id = userId;
+                        meeting.user_name = userName;
+                        meeting.start_time = date;
+                        meeting.org_image = data.Location;
+                        meeting.org_name = orgName;
+                        meeting.org_location = location;
+                        meeting.end_time = null;
+                        meeting.created_at = date;
+                        meeting.updated_at = date;
+
+                        meeting.save()
+                              .then((data => {
+                                    data.orgName = orgName;
+                                    res.json({ success: true, data: data });
+                              }))
+                              .catch((e => {
+                                    res.json({ success: false, error: e })
+                              }))
+                  })
+                  .catch(e => {
+                        console.log("e", e);
+                  })
+            // });
+            // });
+
+      }
+
+
       static stopVisit(req, res) {
             let data = req.body;
-            console.log('data',data)
+            console.log('data', data)
             let orderArray = data.orderArray;
             let userId = data.userId;
             let meetingId = data.id;
@@ -107,7 +192,7 @@ module.exports = class StartStopVisitController {
                                     }
                               })
                         }).then(data => {
-                              console.log("finalOrderArray",finalOrderArray);
+                              console.log("finalOrderArray", finalOrderArray);
                               return Order.insertMany(finalOrderArray);
                         }).then(data => {
                               console.log(data);
@@ -204,12 +289,12 @@ module.exports = class StartStopVisitController {
                   })
       }
       static getMeetings(req, res) {
-        Meeting.find()
-              .then(data => {
-                    return res.json({ success: true, data: data });
-              }).catch(e => {
-                    res.json({ success: false, error: e });
-              })
+            Meeting.find()
+                  .then(data => {
+                        return res.json({ success: true, data: data });
+                  }).catch(e => {
+                        res.json({ success: false, error: e });
+                  })
       }
 
       static updateOrder(req, res) {
@@ -235,14 +320,14 @@ module.exports = class StartStopVisitController {
                         res.json({ success: false, error: e });
                   })
       }
-      static getOrders(req,res){
-        Order.find()
-              .then(data => {
-                    res.json({ success: true, data: data });
-              })
-              .catch(e => {
-                    res.json({ success: false, error: e });
-              })
+      static getOrders(req, res) {
+            Order.find()
+                  .then(data => {
+                        res.json({ success: true, data: data });
+                  })
+                  .catch(e => {
+                        res.json({ success: false, error: e });
+                  })
       }
 
       static addOrder(req, res) {
@@ -262,7 +347,7 @@ module.exports = class StartStopVisitController {
             updatedObj.item_quantity = itemQuantity;
             updatedObj.user_id = userId;
             updatedObj.meeting_id = meetingId;
-            updatedObj.user_name =userName;
+            updatedObj.user_name = userName;
             updatedObj.org_name = orgName;
             updatedObj.created_at = new Date().toISOString();
             updatedObj.updated_at = new Date().toISOString();
