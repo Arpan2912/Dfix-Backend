@@ -11,6 +11,7 @@
     "url": "git+https://github.com/Arpan2912/Dfix-Backend.git"
   },
   "dependencies": {
+    "aws-sdk": "^2.249.1",
     "bluebird": "^3.5.1",
     "body-parser": "^1.18.2",
     "compression": "^1.7.1",
