@@ -7,7 +7,10 @@ var Schema = mongoose.Schema,
         start_time: String,
         org_image: String,
         org_name: String,
-        org_location: Object,
+        org_location: {
+            latitude:Number,
+            longitude:Number
+        },
         end_time: String,
         created_at: String,
         updated_at: String
