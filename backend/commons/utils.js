@@ -20,8 +20,8 @@ module.exports = class Utils {
     static uploadImageOnAmazonS3(bucketName, fileName, bufferdata, contentType, userId, module) {
         return new Promise((resolve, reject) => {
             let s3 = new aws.S3({
-                accessKeyId: 'AKIAJTEOPJIGJXIW6UDQ',
-                secretAccessKey: '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',
+                accessKeyId: '',
+                secretAccessKey: '',
                 // region:'us-east-1',
             });
 
