@@ -65,5 +65,14 @@ module.exports = class LocationController {
         return res.json({success:false,data:e})
       })
     }
+    static getLocation(req,res){
+      console.log(req.body);
+      Location.find({"user_id":req.body._id}).then(data=>{
+        console.log(data);
+        return res.json({"success":true,"data":data});
+      }).catch(e=>{
+        return res.json({success:false,data:e});
+      })
+    }
 
 }

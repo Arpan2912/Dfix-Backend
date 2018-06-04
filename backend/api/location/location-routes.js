@@ -7,6 +7,8 @@ module.exports = class LocationRoutes {
             router
             .route('/api/getCurrentLocation')
             .get(LocationController.getCurrentLocation);
-
+            router
+            .route('/api/getLocation')
+            .post(LocationController.getLocation);
     }
 }

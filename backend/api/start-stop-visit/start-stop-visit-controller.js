@@ -10,8 +10,8 @@ const Utils = require("../../commons/utils");
 module.exports = class StartStopVisitController {
      /**
       * store image on local machine
-      * @param {*} req 
-      * @param {*} res 
+      * @param {*} req
+      * @param {*} res
       */
       static startVisit(req, res) {
             let data = req.body;
@@ -72,8 +72,8 @@ module.exports = class StartStopVisitController {
 
       /**
        * store image using s3
-       * @param {*} req 
-       * @param {*} res 
+       * @param {*} req
+       * @param {*} res
        */
       static startVisit1(req, res) {
             let data = req.body;
@@ -289,12 +289,12 @@ module.exports = class StartStopVisitController {
                   })
       }
       static getMeetings(req, res) {
-            Meeting.find()
-                  .then(data => {
-                        return res.json({ success: true, data: data });
-                  }).catch(e => {
-                        res.json({ success: false, error: e });
-                  })
+        Meeting.find()
+              .then(data => {
+                    return res.json([{ success: true, data: data }]);
+              }).catch(e => {
+                    res.json({ success: false, error: e });
+              })
       }
 
       static updateOrder(req, res) {
@@ -320,14 +320,14 @@ module.exports = class StartStopVisitController {
                         res.json({ success: false, error: e });
                   })
       }
-      static getOrders(req, res) {
-            Order.find()
-                  .then(data => {
-                        res.json({ success: true, data: data });
-                  })
-                  .catch(e => {
-                        res.json({ success: false, error: e });
-                  })
+      static getOrders(req,res){
+        Order.find()
+              .then(data => {
+                    res.json([{ success: true, data: data }]);
+              })
+              .catch(e => {
+                    res.json({ success: false, error: e });
+              })
       }
 
       static addOrder(req, res) {
