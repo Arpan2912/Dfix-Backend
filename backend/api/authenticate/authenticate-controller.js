@@ -1,5 +1,5 @@
 const User = require('../../model/user-model');
-const Admin= require('../../model/admin-model');
+const Admin = require('../../model/admin-model');
 const CryptoJS = require("crypto-js");
 const jwt = require('jsonwebtoken');
 const key = require('../../config/secret.conf');
@@ -11,9 +11,8 @@ module.exports = class AuthenticationController {
     let password = CryptoJS.MD5(req.body.password).toString();
     User.find({
       phone: phone,
-        password: password
-      })
-      .then((user) => {
+      password: password
+    }).then((user) => {
         let data;
         if (user.length > 0) {
           let token = jwt.sign({
@@ -21,32 +20,40 @@ module.exports = class AuthenticationController {
           }, key.secret)
           data = {
             userId: user[0]._id,
-            userName: user[0].first_name +" "+ user[0].last_name,
+            userName: user[0].first_name + " " + user[0].last_name,
             token: token
           }
-          res.json({
+          res.status(200).json({
             "success": true,
-            data: data
+            data: data,
+            msg: "user verified"
           });
         } else {
-          res.json({
+          res.status(409).json({
             "success": false,
-            data: "username or password may be incorrect"
+            data: "username or password may be incorrect",
+            message: "username or password may be incorrect"
           });
         }
+      }).catch(e=>{
+        console.log("e", e);
+        res.status(500).json({
+          success: false,
+          data: "internal server error",
+          message: "internal server error"
+        });
       })
     // .catch(e => {
     //     res.json({"success":false,data:"Please try again later",error:e});
     // })
   }
   static authenticateAdmin(req, res) {
-    let phone = req.body.phone;
+    let email = req.body.email;
     let password = CryptoJS.MD5(req.body.password).toString();
     Admin.find({
-      phone: phone,
+      email: email,
       password: password
-    }).
-    then((user) =>{
+    }).then((user) => {
       let adminDetails;
       if (user.length > 0) {
         let token = jwt.sign({
@@ -54,19 +61,28 @@ module.exports = class AuthenticationController {
         }, key.secret)
         adminDetails = {
           userId: user[0]._id,
-          userName: user[0].first_name+" " + user[0].last_name,
+          userName: user[0].first_name + " " + user[0].last_name,
           token: token
         }
         res.json({
-          "success": true,
-          data: adminDetails
+          success: true,
+          data: adminDetails,
+          message: "admin logged successfully"
         });
       } else {
-        res.json({
-          "success": false,
-          data: "username or password may be incorrect"
+        res.status(409).json({
+          success: false,
+          data: "username or password may be incorrect",
+          message: "username or password may be incorrect"
         });
       }
+    }).catch(e => {
+      console.log("e", e);
+      res.status(500).json({
+        success: false,
+        data: "internal server error",
+        message: "internal server error"
+      });
     })
   }
 }

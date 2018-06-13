@@ -29,12 +29,13 @@ module.exports = class UserController {
             })
             .then(data => {
                 if (data === false)
-                    res.json({ status: false, data: "user already exist" });
+                    res.status(409).json({ status: false, data: "user already exist",message:"user already exist" });
                 else
-                    res.json({ status: true, data: data })
+                    res.status(200).json({ status: true, data: data ,message:"user added successfully"});
             })
             .catch(e => {
-
+                console.log("e",e);
+                res.status(409).json({ status: false, data:null,message:"add user fail" });
             })
     }
 
@@ -55,21 +56,22 @@ module.exports = class UserController {
             .update(user)
             .then((result) => {
                 console.log(result);
-                res.json({ success: true, data: data, error: {} })
+                res.status(200).json({ success: true, data: data,message:"update user success" });
             })
             .catch(e => {
                 console.log(e);
-                res.json({ success: false, error: e, data: {} })
+                res.status(500).json({ success: false, error: e, data: null,message:"update user fail" });
             })
     }
 
     static getAllUser(req, res) {
         User.find()
             .then(data => {
-                res.json([{ data: data }])
+                res.status(200).json({status:true, data: data,message:"get all user success" });
             })
             .catch(e => {
-                res.json({ error: e })
+                console.log("e",e);
+                res.status(500).json({status:false, error: e,message:"get all user fail"  })
             })
     }
 
@@ -77,10 +79,11 @@ module.exports = class UserController {
         User.findOneAndUpdate({ _id: req.body.user._id }, { 'is_deleted': true })
             .then(data => {
                 console.log("-----------------", data);
-                res.json({ success: true, data: data });
+                res.status(200).json({ success: true, data: data,message:"delete user success"  });
             })
             .catch(e => {
-                res.json({ success: false, error: e })
+                console.log("e",e);
+                res.status(500).json({ success: false, error: e,message:"delete user error"  });
             })
     }
 
@@ -91,13 +94,14 @@ module.exports = class UserController {
             .then((data) => {
                 console.log(data);
                 if (data.length === 0) {
-                    res.json({ success: false, message: 'you are not allowed to Use this App' });
+                    res.status(500).json({ success: false,data:null, message: 'you are not allowed to Use this App' });
                 } else {
-                    res.json({ success: true, data: data[0] })
+                    res.status(200).json({ success: true, data: data[0], message: 'user verified successfully'  });
                 }
             })
             .catch(e => {
-                res.json({ success: false, error: e });
+                console.log("e",e);
+                res.status(500).json({ success: false, error: e , message: 'user verified fail'  });
             })
     }
     static getUserByPhone(req, res) {
@@ -107,13 +111,14 @@ module.exports = class UserController {
             .then((data) => {
                 console.log(data);
                 if (data.length === 0) {
-                    res.json({ success: false, message: 'you are not allowed to Use this App' });
+                    res.status(409).json({ success: false, message: 'you are not allowed to Use this App' });
                 } else {
-                    res.json({ success: true, data: data[0] })
+                    res.status(200).json({ success: true, data: data[0],message:"user verified successfully" });
                 }
             })
             .catch(e => {
-                res.json({ success: false, error: e });
+                console.log("e",e);
+                res.status(500).json({ success: false, message: e ,message:"user verificatin fail"});
             })
     }
 

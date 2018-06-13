@@ -33,11 +33,12 @@ module.exports = class LocationController {
             obj.updated_at = new Date().toISOString();
             Location.findOneAndUpdate({ _id: id }, obj,{new:true})
                 .then(data => {
-                    console.log(data);
-                    res.send({success:true,data:data});
+                    // console.log(data);
+                    res.status(200).send({success:true,data:data,message:"location updated successfully"});
                 })
                 .catch(e => {
-                    res.send({success:false,data:e});
+                    console.log("e",e);
+                    res.status(500).send({success:false,data:e,message:"internal server error"});
                 })
         } else {
             let obj = new Location();
@@ -50,19 +51,21 @@ module.exports = class LocationController {
             obj.updated_at = new Date().toISOString();
             obj.save()
                 .then(data => {
-                    res.send({success:true,data:data});
+                    res.status(200).send({success:true,data:data,message:"location created successfully"});
                 })
                 .catch(e => {
-                    res.send({success:false,data:e});
+                    console.log("error",e);
+                    res.status(500).send({success:false,data:e,message:"internal server error"});
                 })
         }
 
     }
     static getCurrentLocation(req,res){
       Location.find().then(data=>{
-        return  res.json([{"success":true,"data":data}]);
+        return  res.status(200).json({success:true,data:data,message:"location fetched successfully"});
       }).catch(e=>{
-        return res.json({success:false,data:e})
+        console.log("e", e);
+        return res.status(500).json({success:false,data:e,message:"location fetch error"});
       })
     }
     static getLocation(req,res){

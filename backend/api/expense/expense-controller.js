@@ -42,14 +42,16 @@ module.exports = class ExpenseController {
 
             fs.writeFile(_qroot + '/public/' + userId + '/' + newDate + "ex.jpg", base64Data, 'base64', function (err) {
                   if (err) {
-                        return res.json({ success: false, error: err });
+                        console.log("err",err);
+                        return res.status(500).json({ success: false, error: err,message:"internal server error" });
                   }
                   expense.image_url = userId + '/' + newDate + "ex.jpg";
                   expense.save()
                         .then(data => {
-                              return res.json({ success: true, data: data })
+                              return res.status(200).json({ success: true, data: data })
                         }).catch(e => {
-                              return res.json({ success: false, error: e });
+                              console.log("e", e);
+                              return res.status(500).json({ success: false, error: e,message:"internal server error" });
                         })
             })
       }
@@ -72,10 +74,11 @@ module.exports = class ExpenseController {
             Expense.findOneAndUpdate({ _id: expenseId }, updatedObj, { new: true })
                   .then(data => {
                         console.log("order updated successfully");
-                        res.json({ success: true, data: data })
+                        return res.status(200).json({ success: true, data: data,message:"get expense successfully" })
                   })
                   .catch(e => {
-                        res.json({ success: false, error: e });
+                        console.log("e",e);
+                        return res.status(500).json({ success: false, error: e,message:"internal server error" });
                   })
       }
 
@@ -86,10 +89,11 @@ module.exports = class ExpenseController {
 
             Expense.deleteOne({ _id: expenseId })
                   .then(data => {
-                        res.json({ success: true, data: data });
+                        return res.status(200).json({ success: true, data: data,message:"expense deleted successfully" });
                   })
                   .catch(e => {
-                        res.json({ success: false, error: e });
+                        console.log("e",e);
+                        return res.status(500).json({ success: false, error: e,message:"internal server error" });
                   })
 
       }
@@ -101,17 +105,19 @@ module.exports = class ExpenseController {
             console.log("user id", userId);
             Expense.find({ user_id: userId, created_at: { $gt: date } })
                   .then(data => {
-                        return res.json({ success: true, data: data });
+                        return res.status(200).json({ success: true, data: data, message:"get expense successfully" });
                   }).catch(e => {
-                        res.json({ success: false, error: e });
+                        console.log("e",e);
+                       return res.status(500).json({ success: false, error: e ,message:"internal server error" });
                   })
       }
       static getExpense(req, res) {
             Expense.find()
                   .then(data => {
-                        return res.json({ success: true, data: data });
+                        return res.status(200).json({ success: true, data: data,message:"get expense successfully" });
                   }).catch(e => {
-                        res.json({ success: false, error: e });
+                        console.log("e", e);
+                        return res.status(500).json({ success: false, error: e,message:"internal server error" });
                   })
       }
 

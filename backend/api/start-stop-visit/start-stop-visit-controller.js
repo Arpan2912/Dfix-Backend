@@ -8,11 +8,11 @@ const momentTimezone = require('moment-timezone');
 const Utils = require("../../commons/utils");
 
 module.exports = class StartStopVisitController {
-     /**
-      * store image on local machine
-      * @param {*} req
-      * @param {*} res
-      */
+      /**
+       * store image on local machine
+       * @param {*} req 
+       * @param {*} res 
+       */
       static startVisit(req, res) {
             let data = req.body;
             console.log(data);
@@ -135,14 +135,16 @@ module.exports = class StartStopVisitController {
                         meeting.save()
                               .then((data => {
                                     data.orgName = orgName;
-                                    res.json({ success: true, data: data });
+                                    res.status(200).json({ success: true, data: data, message: "start visit success" });
                               }))
                               .catch((e => {
-                                    res.json({ success: false, error: e })
+                                    console.log("e",e);
+                                    res.status(500).json({ success: false, error: e, message: "start visit failed please try again" })
                               }))
                   })
                   .catch(e => {
                         console.log("e", e);
+                        res.status(500).json({ success: false, error: e, message: "start visit failed please try again" })
                   })
             // });
             // });
@@ -196,14 +198,16 @@ module.exports = class StartStopVisitController {
                               return Order.insertMany(finalOrderArray);
                         }).then(data => {
                               console.log(data);
-                              res.json({ success: true });
+                              res.status(200).json({ success: true, data: null, message: "stop visit successfully" });
                         }).catch(e => {
-                              res.json({ success: false, error: e });
+                              console.log("e",e);
+                              res.status(500).json({ success: false, error: e, message: "stop visit failed" });
                         })
 
                   })
                   .catch(e => {
-                        return res.json({ success: false, error: e });
+                        console.log("e",e);
+                        return res.status(500).json({ success: false, error: e, message: "stop visit failed" });
                   })
       }
 
@@ -247,11 +251,11 @@ module.exports = class StartStopVisitController {
                                           })
                               })
                         }).then(data => {
-                              return res.json({ success: true, data: data });
+                              return res.status(200).json({ success: true, data: data, message: "get today visit successfully" });
+                        }).catch(e => {
+                              console.log("e",e);
+                              return res.status(500).json({ success: false, error: e, message: "today visit error" });
                         })
-                              .catch(e => {
-                                    res.json({ success: false, error: e });
-                              })
                         //@NOTE:response
                         // {
                         //       "todayMeeting": {
@@ -285,16 +289,18 @@ module.exports = class StartStopVisitController {
 
                   })
                   .catch(e => {
+                        console.log("e",e);
                         res.json({ success: false, error: e });
                   })
       }
       static getMeetings(req, res) {
-        Meeting.find()
-              .then(data => {
-                    return res.json([{ success: true, data: data }]);
-              }).catch(e => {
-                    res.json({ success: false, error: e });
-              })
+            Meeting.find()
+                  .then(data => {
+                        return res.status(200).json({ success: true, data: data, message: "get visit successfully" });
+                  }).catch(e => {
+                        console.log("e",e);
+                        res.status(500).json({ success: false, error: e, message: "stop visit failed" });
+                  })
       }
 
       static updateOrder(req, res) {
@@ -314,20 +320,23 @@ module.exports = class StartStopVisitController {
             Order.findOneAndUpdate({ _id: orderId }, updatedObj, { new: true })
                   .then(data => {
                         console.log("order updated successfully");
-                        res.json({ success: true, data: data })
+                        res.status(200).json({ success: true, data: data,message:"update order successfully" })
                   })
                   .catch(e => {
-                        res.json({ success: false, error: e });
+                        console.log("e",e);
+                        res.status(500).json({ success: false, error: e,message:"update order failed" });
                   })
       }
-      static getOrders(req,res){
-        Order.find()
-              .then(data => {
-                    res.json([{ success: true, data: data }]);
-              })
-              .catch(e => {
-                    res.json({ success: false, error: e });
-              })
+
+      static getOrders(req, res) {
+            Order.find()
+                  .then(data => {
+                        res.status(200).json({ success: true, data: data,message:"get orders successfully" });
+                  })
+                  .catch(e => {
+                        console.log("e",e);
+                        res.status(500).json({ success: false, error: e,message:"get order failed" });
+                  })
       }
 
       static addOrder(req, res) {
@@ -356,10 +365,11 @@ module.exports = class StartStopVisitController {
             updatedObj.save()
                   .then(data => {
                         console.log("order added successfully");
-                        res.json({ success: true, data: data })
+                        res.status(200).json({ success: true, data: data,message:"order added successfully" })
                   })
                   .catch(e => {
-                        res.json({ success: true, error: e });
+                        console.log("e",e);
+                        res.status(500).json({ success: true, error: e,message:"order add error" });
                   })
 
       }
@@ -370,10 +380,11 @@ module.exports = class StartStopVisitController {
 
             Order.deleteOne({ _id: meetingId })
                   .then(data => {
-                        res.json({ success: true, data: data });
+                        res.status(200).json({ success: true, data: data,message:"order deleted successfully" });
                   })
                   .catch(e => {
-                        res.json({ success: false, error: e });
+                        console.log("e",e);
+                        res.status(500).json({ success: false, error: e,message:"order delete failed" });
                   })
 
       }
@@ -389,13 +400,14 @@ module.exports = class StartStopVisitController {
                         console.log("data", data, "userID", userId);
                         if (data.length > 0) {
                               let lastVisit = data.length - 1;
-                              res.json({ success: true, data: data[lastVisit] });
+                              res.status(200).json({ success: true, data: data[lastVisit],message:"get last running visit" });
                         }
                         else
-                              res.json({ success: true, data: null });
+                              res.status(200).json({ success: true, data: null,message:"get no last running visit  "  });
                   })
                   .catch(e => {
-                        res.json({ success: false, error: 'something went wrong' });
+                        console.log("e",e);
+                        res.status(500).json({ success: false, error: 'something went wrong',message:"get last running visit error" });
                   })
 
       }

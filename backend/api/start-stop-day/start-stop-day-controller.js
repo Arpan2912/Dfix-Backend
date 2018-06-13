@@ -45,10 +45,11 @@ module.exports = class StartStopDayController {
 
                 daySummary.save()
                     .then((data => {
-                        res.json({ success: true, data: data });
+                        res.status(200).json({ success: true, data: data, message: "start day successfully" });
                     }))
                     .catch((e => {
-                        res.json({ success: false, error: e })
+                        console.log("e", e);
+                        res.status(500).json({ success: false, error: e, message: "start day error" });
                     }))
             });
         });
@@ -118,29 +119,30 @@ module.exports = class StartStopDayController {
                     .then(result => {
                         console.log("data", result);
                         console.log('attandance updated');
-                        res.json({ success: true, data: stopDayResult });
+                        res.status(200).json({ success: true, data: stopDayResult, message: "day stopped successfully" });
                     })
                     .catch(e => {
-                        res.json({ success: false, error: e })
+                        console.log("e", e);
+                        res.status(500).json({ success: false, error: e, message: "day stop error" });
                     })
             });
         });
 
     }
-    static resetEndTime(req,res){
-      let _id=req.body._id;
-      DaySummary.findById(_id)
-        .then(day => {
-          console.log(day);
-          day.end_time=null;
-          day.end_image=null;
-          day.end_km=null;
-            //user.nhsSys = nhsSys;
-            return day.save()
-                .then((day) => {
-                    res.status(200).json(day);
-                })
-        });
+    static resetEndTime(req, res) {
+        let _id = req.body._id;
+        DaySummary.findById(_id)
+            .then(day => {
+                console.log(day);
+                day.end_time = null;
+                day.end_image = null;
+                day.end_km = null;
+                //user.nhsSys = nhsSys;
+                return day.save()
+                    .then((day) => {
+                        res.status(200).json(day);
+                    })
+            });
     }
     static getTodayStartDayDetails(req, res) {
         let userId = req.params.userId;
@@ -153,21 +155,23 @@ module.exports = class StartStopDayController {
             .then(data => {
                 console.log("data", data, "userID", userId);
                 if (data.length > 0)
-                    res.json({ success: true, data: data[0] });
+                    res.status(200).json({ success: true, data: data[0], message: "get today day detail successfully" });
                 else
-                    res.json({ success: true, data: null });
+                    res.status(200).json({ success: true, data: null, message: "no today detail found" });
             })
             .catch(e => {
-                res.json({ success: false, error: 'something went wrong' });
+                console.log("e", e);
+                res.status(500).json({ success: false, error: 'something went wrong' });
             })
 
     }
     static getDaySummary(req, res) {
         DaySummary.find()
             .then(data => {
-                return res.json({ success: true, data: data });
+                return res.status(200).json({ success: true, data: data, message: "get today summary" });
             }).catch(e => {
-                res.json({ success: false, error: e });
+                console.log("e", e);
+                return res.status(500).json({ success: false, error: e, message: "internal server error" });
             })
     }
 
