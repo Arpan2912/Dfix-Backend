@@ -62,8 +62,16 @@ module.exports = class LocationController {
     }
     static getCurrentLocation(req,res){
       Location.find().then(data=>{
-        return  res.status(200).json({success:true,data:data,message:"location fetched successfully"});
-      }).catch(e=>{
+        var arr=[];
+        console.log(new Date().toLocaleDateString());
+        for(var i in data){
+          if(new Date(data[i].created_at).toLocaleDateString()==new Date().toLocaleDateString()){
+            arr.push(data[i]);
+          }
+        }
+        console.log(arr);
+        return  res.status(200).json({success:true,data:arr,message:"location fetched successfully"});
+        }).catch(e=>{
         console.log("e", e);
         return res.status(500).json({success:false,data:e,message:"location fetch error"});
       })
