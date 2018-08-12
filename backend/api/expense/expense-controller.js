@@ -164,10 +164,6 @@ module.exports = class ExpenseController {
             console.log("user id", userId);
             Expense
                   .find({ user_id: userId, created_at: { $gt: date } })
-                  .map((c) => {
-                        c.image_url = s3Url + c.image_url
-                        return c;
-                  })
                   .then(data => {
                         return res.status(200).json({ success: true, data: data, message: "get expense successfully" });
                   }).catch(e => {

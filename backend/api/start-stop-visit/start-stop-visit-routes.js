@@ -20,6 +20,7 @@ module.exports = class StartStopVisitRoute {
         router
             .route('/api/update-order-web')
             .post(StartStopVisitController.updateOrderWebApp);
+
         router
             .route('/api/add-order')
             .post(StartStopVisitController.addOrder);
@@ -31,11 +32,17 @@ module.exports = class StartStopVisitRoute {
         router
             .route('/api/get-today-last-running-meeting/:userId')
             .get(StartStopVisitController.getTodayLastRunningVisit);
+
         router
             .route('/api/getMeetings')
             .get(StartStopVisitController.getMeetings)
-            router
+
+        router
             .route('/api/getAllOrders')
             .get(StartStopVisitController.getAllOrders)
+
+        router
+            .route('/api/getOrders/:id')
+            .get(StartStopVisitController.getOrders)
     }
 }
