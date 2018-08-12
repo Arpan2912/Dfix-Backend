@@ -3,6 +3,8 @@ const Admin = require('../../model/admin-model');
 const CryptoJS = require("crypto-js");
 const jwt = require('jsonwebtoken');
 const key = require('../../config/secret.conf');
+const logger = require('../../config/winston');
+
 module.exports = class AuthenticationController {
   static authenticateUser(req, res) {
     console.log("body", req.body)
@@ -37,6 +39,7 @@ module.exports = class AuthenticationController {
         }
       }).catch(e=>{
         console.log("e", e);
+        logger.error(e.stack);
         res.status(500).json({
           success: false,
           data: "internal server error",
@@ -77,6 +80,7 @@ module.exports = class AuthenticationController {
         });
       }
     }).catch(e => {
+      logger.error(e.stack);
       console.log("e", e);
       res.status(500).json({
         success: false,

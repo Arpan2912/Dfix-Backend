@@ -3,9 +3,13 @@ const Attandance = require('../../model/attandance-model');
 const fs = require('fs');
 const moment = require('moment');
 const Utils = require("../../commons/utils");
-
+const logger = require("../../config/winston");
+const config = require(`../../constants/${process.env.NODE_ENV}.json`);
+let s3Url = `${config.s3.url}${config.s3.bucketName}/`
 module.exports = class StartStopDayController {
-    static startDay(req, res) {
+
+    //code without s3
+    static startDay1(req, res) {
         console.log("--------------------------");
         console.log(req.body);
         let data = req.body;
@@ -29,6 +33,7 @@ module.exports = class StartStopDayController {
 
             fs.writeFile(_qroot + '/public/' + userId + '/' + newDate + "start.jpg", base64Data, 'base64', function (err) {
                 console.log(err);
+                logger.error(err.stack);
                 let daySummary = new DaySummary();
                 daySummary.user_id = userId;
                 daySummary.start_time = date;
@@ -48,6 +53,7 @@ module.exports = class StartStopDayController {
                         res.status(200).json({ success: true, data: data, message: "start day successfully" });
                     }))
                     .catch((e => {
+                        logger.error(e.stack);
                         console.log("e", e);
                         res.status(500).json({ success: false, error: e, message: "start day error" });
                     }))
@@ -56,7 +62,60 @@ module.exports = class StartStopDayController {
 
     }
 
-    static stopDay(req, res) {
+    //code with s3
+    static startDay(req, res) {
+        console.log("--------------------------");
+        console.log(req.body);
+        let data = req.body;
+        let _qroot = process.cwd();
+        let base64 = data.base64;
+        let km = data.km;
+        let name = data.user_name;
+        let userId = data.userId;
+        let date = new Date().toISOString();
+        let newDate = moment(date).format("DDMMYYYYHHMM");
+        let imageType = Utils.extractExtension(base64);
+        var base64Data = base64.replace(/^data:image\/jpg;base64,/, "");
+        let imgData = new Buffer(base64Data, 'base64');
+        console.log(_qroot);
+
+        Utils.uploadImageOnAmazonS3('d-fix', `${userId}/${newDate}start.jpg`, imgData, imageType, userId)
+            .then(data => {
+                // let resObj =
+                //     {
+                //         ETag: '"bb0cd586e3c8b0bffcaf0637cbe28421"',
+                //         Location: 'https://liit-staging-nikunj.s3.amazonaws.com/1/product/product2',
+                //         key: '1/product/product2',
+                //         Key: '1/product/product2',
+                //         Bucket: 'liit-staging-nikunj'
+                //     }
+                let daySummary = new DaySummary();
+                daySummary.user_id = userId;
+                daySummary.start_time = date;
+                daySummary.start_image = data.key;
+                daySummary.start_km = km;
+                daySummary.start_location = null;
+                daySummary.user_name = name;
+                daySummary.end_time = null;
+                daySummary.end_image = null;
+                daySummary.end_km = null;
+                daySummary.end_location = null;
+                daySummary.created_at = date;
+                daySummary.updated_at = date;
+
+                return daySummary.save()
+            })
+            .then((data) => {
+                res.status(200).json({ success: true, data: data, message: "start day successfully" });
+            }).catch(e => {
+                logger.error(err.stack);
+                res.status(500).json({ success: false, error: e, message: "start day error" });
+            })
+
+    }
+
+    //code without s3
+    static stopDay1(req, res) {
         let data = req.body;
         let _qroot = process.cwd();
         let base64 = data.base64;
@@ -77,6 +136,7 @@ module.exports = class StartStopDayController {
 
             fs.writeFile(_qroot + '/public/' + userId + "/" + newDate + "stop.jpg", base64Data, 'base64', function (err) {
                 console.log(err);
+                logger.error(err.stack);
                 let daySummary = {};
                 daySummary.user_id = userId;
                 daySummary.end_time = date;
@@ -122,6 +182,7 @@ module.exports = class StartStopDayController {
                         res.status(200).json({ success: true, data: stopDayResult, message: "day stopped successfully" });
                     })
                     .catch(e => {
+                        logger.error(e.stack);
                         console.log("e", e);
                         res.status(500).json({ success: false, error: e, message: "day stop error" });
                     })
@@ -129,6 +190,55 @@ module.exports = class StartStopDayController {
         });
 
     }
+
+    //code with s3
+    static stopDay(req, res) {
+        let data = req.body;
+        let _qroot = process.cwd();
+        let base64 = data.base64;
+        let km = data.km;
+        let userId = data.userId;
+        let _id = data.id;
+        let date = new Date().toISOString();
+        let newDate = moment(date).format("DDMMYYYYHHMM");
+        let imageType = Utils.extractExtension(base64);
+        let stopDayResult = null;
+        var base64Data = base64.replace(/^data:image\/jpg;base64,/, "");
+        let imgData = new Buffer(base64Data, 'base64');
+
+        Utils.uploadImageOnAmazonS3('d-fix', `${userId}/${newDate}stop.jpg`, imgData, imageType, userId)
+            .then(data => {
+                // let resObj =
+                //     {
+                //         ETag: '"bb0cd586e3c8b0bffcaf0637cbe28421"',
+                //         Location: 'https://liit-staging-nikunj.s3.amazonaws.com/1/product/product2',
+                //         key: '1/product/product2',
+                //         Key: '1/product/product2',
+                //         Bucket: 'liit-staging-nikunj'
+                //     }
+                let daySummary = {};
+                daySummary.user_id = userId;
+                daySummary.end_time = date;
+                daySummary.end_image = data.key;
+                daySummary.end_km = km;
+                daySummary.end_location = null;
+                daySummary.updated_at = new Date().toISOString();
+                console.log(daySummary);
+                console.log("id is ", _id);
+
+                return DaySummary.findOneAndUpdate({ _id: _id }, daySummary, { new: true })
+            })
+            .then(data => {
+                console.log("data", result);
+                console.log('attandance updated');
+                res.status(200).json({ success: true, data: stopDayResult, message: "day stopped successfully" });
+            })
+            .catch(e => {
+                logger.error(err.stack);
+                res.status(500).json({ success: false, error: e, message: "day stop error" });
+            })
+    }
+
     static resetEndTime(req, res) {
         let _id = req.body._id;
         DaySummary.findById(_id)
@@ -141,6 +251,9 @@ module.exports = class StartStopDayController {
                 return day.save()
                     .then((day) => {
                         res.status(200).json(day);
+                    })
+                    .catch(e => {
+
                     })
             });
     }
@@ -161,16 +274,23 @@ module.exports = class StartStopDayController {
             })
             .catch(e => {
                 console.log("e", e);
+                logger.error(e.stack);
                 res.status(500).json({ success: false, error: 'something went wrong' });
             })
 
     }
     static getDaySummary(req, res) {
-        DaySummary.find()
+        DaySummary
+            .find()
             .then(data => {
+                data.forEach(function(element) {
+                   element.start_image = s3Url+element.start_image;
+                   element.end_image = s3Url+element.end_image; 
+                }, this);
                 return res.status(200).json({ success: true, data: data, message: "get today summary" });
             }).catch(e => {
                 console.log("e", e);
+                logger.error(e.stack);
                 return res.status(500).json({ success: false, error: e, message: "internal server error" });
             })
     }

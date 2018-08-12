@@ -1,6 +1,7 @@
 const User = require('../../model/user-model');
 const CryptoJS = require("crypto-js");
 const key = require("../../config/secret.conf");
+const logger = require('../../config/winston');
 
 module.exports = class UserController {
     static addUser(req, res) {
@@ -28,14 +29,18 @@ module.exports = class UserController {
                 }
             })
             .then(data => {
-                if (data === false)
-                    res.status(409).json({ status: false, data: "user already exist",message:"user already exist" });
-                else
-                    res.status(200).json({ status: true, data: data ,message:"user added successfully"});
+                if (data === false) {
+                    logger.error("user already exist")
+                    res.status(409).json({ status: false, data: "User already exist", message: "User already exist" });
+                } else {
+                    logger.info("User added successfully");
+                    res.status(200).json({ status: true, data: data, message: "User added successfully" });
+                }
             })
             .catch(e => {
-                console.log("e",e);
-                res.status(409).json({ status: false, data:null,message:"add user fail" });
+                console.log("e", e);
+                logger.error(e.stack);
+                res.status(409).json({ status: false, data: null, message: "Add user fail" });
             })
     }
 
@@ -55,35 +60,42 @@ module.exports = class UserController {
         User.find({ _id: data.userId })
             .update(user)
             .then((result) => {
+                logger.info("update user success");
                 console.log(result);
-                res.status(200).json({ success: true, data: data,message:"update user success" });
+                res.status(200).json({ success: true, data: data, message: "update user success" });
             })
             .catch(e => {
+                logger.error(e.stack);
                 console.log(e);
-                res.status(500).json({ success: false, error: e, data: null,message:"update user fail" });
+                res.status(500).json({ success: false, error: e, data: null, message: "update user fail" });
             })
     }
 
     static getAllUser(req, res) {
         User.find()
             .then(data => {
-                res.status(200).json({status:true, data: data,message:"get all user success" });
+                logger.info("get all user success");
+                res.status(200).json({ status: true, data: data, message: "get all user success" });
             })
             .catch(e => {
-                console.log("e",e);
-                res.status(500).json({status:false, error: e,message:"get all user fail"  })
+                logger.error(e.stack);
+                console.log("e", e);
+                res.status(500).json({ status: false, error: e, message: "get all user fail" })
             })
     }
 
     static deleteUser(req, res) {
         User.findOneAndUpdate({ _id: req.body.user._id }, { 'is_deleted': true })
             .then(data => {
+                logger.info("delete user");
+                logger.info(data);
                 console.log("-----------------", data);
-                res.status(200).json({ success: true, data: data,message:"delete user success"  });
+                res.status(200).json({ success: true, data: data, message: "delete user success" });
             })
             .catch(e => {
-                console.log("e",e);
-                res.status(500).json({ success: false, error: e,message:"delete user error"  });
+                logger.error(e.stack);
+                console.log("e", e);
+                res.status(500).json({ success: false, error: e, message: "delete user error" });
             })
     }
 
@@ -94,14 +106,17 @@ module.exports = class UserController {
             .then((data) => {
                 console.log(data);
                 if (data.length === 0) {
-                    res.status(500).json({ success: false,data:null, message: 'you are not allowed to Use this App' });
+                    logger.info("User not found");
+                    res.status(500).json({ success: false, data: null, message: 'you are not allowed to Use this App' });
                 } else {
-                    res.status(200).json({ success: true, data: data[0], message: 'user verified successfully'  });
+                    logger.info("User verified successfully");
+                    res.status(200).json({ success: true, data: data[0], message: 'user verified successfully' });
                 }
             })
             .catch(e => {
-                console.log("e",e);
-                res.status(500).json({ success: false, error: e , message: 'user verified fail'  });
+                logger.error(e.stack);
+                console.log("e", e);
+                res.status(500).json({ success: false, error: e, message: 'user verified fail' });
             })
     }
     static getUserByPhone(req, res) {
@@ -111,14 +126,17 @@ module.exports = class UserController {
             .then((data) => {
                 console.log(data);
                 if (data.length === 0) {
+                    logger.info("User not found");
                     res.status(409).json({ success: false, message: 'you are not allowed to Use this App' });
                 } else {
-                    res.status(200).json({ success: true, data: data[0],message:"user verified successfully" });
+                    logger.info("User verified successfully");
+                    res.status(200).json({ success: true, data: data[0], message: "user verified successfully" });
                 }
             })
             .catch(e => {
-                console.log("e",e);
-                res.status(500).json({ success: false, message: e ,message:"user verificatin fail"});
+                logger.error(e.stack);
+                console.log("e", e);
+                res.status(500).json({ success: false, message: e, message: "user verificatin fail" });
             })
     }
 

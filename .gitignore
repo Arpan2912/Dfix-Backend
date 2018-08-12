@@ -5,6 +5,8 @@ node_modules/
 www/build/
 platforms/*
 plugins
+logs/*
+public/*
 
 lib/
 *.swp

@@ -6,6 +6,9 @@ const moment = require('moment');
 const bluebird = require("bluebird");
 const momentTimezone = require('moment-timezone');
 const Utils = require("../../commons/utils");
+const logger = require("../../config/winston");
+const config = require(`../../constants/${process.env.NODE_ENV}.json`);
+let s3Url = `${config.s3.url}${config.s3.bucketName}/`
 
 module.exports = class StartStopVisitController {
       /**
@@ -13,7 +16,7 @@ module.exports = class StartStopVisitController {
        * @param {*} req 
        * @param {*} res 
        */
-      static startVisit(req, res) {
+      static startVisit1(req, res) {
             let data = req.body;
             console.log(data);
             let _qroot = process.cwd();
@@ -36,7 +39,7 @@ module.exports = class StartStopVisitController {
 
                   fs.writeFile(_qroot + '/public/' + userId + '/' + newDate + "startVisit.jpg", base64Data, 'base64', function (err) {
                         console.log(err);
-
+                        logger.error(err.stack);
                         /**
                          *  user_id: String,
                     start_time: String,
@@ -63,6 +66,7 @@ module.exports = class StartStopVisitController {
                                     res.json({ success: true, data: data });
                               }))
                               .catch((e => {
+                                    logger.error(e.stack);
                                     res.json({ success: false, error: e })
                               }))
                   });
@@ -75,7 +79,7 @@ module.exports = class StartStopVisitController {
        * @param {*} req
        * @param {*} res
        */
-      static startVisit1(req, res) {
+      static startVisit(req, res) {
             let data = req.body;
             console.log(data);
             let _qroot = process.cwd();
@@ -125,7 +129,7 @@ module.exports = class StartStopVisitController {
                         meeting.user_id = userId;
                         meeting.user_name = userName;
                         meeting.start_time = date;
-                        meeting.org_image = data.Location;
+                        meeting.org_image = data.key;
                         meeting.org_name = orgName;
                         meeting.org_location = location;
                         meeting.end_time = null;
@@ -133,16 +137,18 @@ module.exports = class StartStopVisitController {
                         meeting.updated_at = date;
 
                         meeting.save()
-                              .then((data => {
+                              .then((data) => {
                                     data.orgName = orgName;
                                     res.status(200).json({ success: true, data: data, message: "start visit success" });
-                              }))
-                              .catch((e => {
-                                    console.log("e",e);
+                              })
+                              .catch((e) => {
+                                    logger.error(e.stack);
+                                    console.log("e", e);
                                     res.status(500).json({ success: false, error: e, message: "start visit failed please try again" })
-                              }))
+                              })
                   })
                   .catch(e => {
+                        logger.error(e.stack);
                         console.log("e", e);
                         res.status(500).json({ success: false, error: e, message: "start visit failed please try again" })
                   })
@@ -200,16 +206,19 @@ module.exports = class StartStopVisitController {
                               console.log(data);
                               res.status(200).json({ success: true, data: null, message: "stop visit successfully" });
                         }).catch(e => {
-                              console.log("e",e);
+                              logger.error(e.stack);
+                              console.log("e", e);
                               res.status(500).json({ success: false, error: e, message: "stop visit failed" });
                         })
 
                   })
                   .catch(e => {
-                        console.log("e",e);
+                        logger.error(e.stack);
+                        console.log("e", e);
                         return res.status(500).json({ success: false, error: e, message: "stop visit failed" });
                   })
       }
+
 
       static getTodayVisit(req, res) {
             //@NOTE:Query to be update to get only today visits
@@ -245,6 +254,8 @@ module.exports = class StartStopVisitController {
                                                       // orderAmount = data[0];
                                                       return resolve({ todayMeeting: todayMeeting, orders: orders, orderAmount: orderAmount, numberOfOrders: numberOfOrders });
                                                       console.log("order amount =", data);
+                                                }).catch(e => {
+                                                      return reject(e);
                                                 })
 
                                                 //return resolve({ todayMeeting: todayMeeting, orders: orders, orderAmount: orderAmount });
@@ -253,7 +264,8 @@ module.exports = class StartStopVisitController {
                         }).then(data => {
                               return res.status(200).json({ success: true, data: data, message: "get today visit successfully" });
                         }).catch(e => {
-                              console.log("e",e);
+                              logger.error(e.stack);
+                              console.log("e", e);
                               return res.status(500).json({ success: false, error: e, message: "today visit error" });
                         })
                         //@NOTE:response
@@ -289,16 +301,22 @@ module.exports = class StartStopVisitController {
 
                   })
                   .catch(e => {
-                        console.log("e",e);
+                        logger.error(e.stack);
+                        console.log("e", e);
                         res.json({ success: false, error: e });
                   })
       }
       static getMeetings(req, res) {
-            Meeting.find()
+            Meeting
+                  .find()
                   .then(data => {
+                        data.forEach(function(element) {
+                              element.org_image = s3Url+element.org_image;
+                           }, this);
                         return res.status(200).json({ success: true, data: data, message: "get visit successfully" });
                   }).catch(e => {
-                        console.log("e",e);
+                        logger.error(e.stack);
+                        console.log("e", e);
                         res.status(500).json({ success: false, error: e, message: "stop visit failed" });
                   })
       }
@@ -320,22 +338,24 @@ module.exports = class StartStopVisitController {
             Order.findOneAndUpdate({ _id: orderId }, updatedObj, { new: true })
                   .then(data => {
                         console.log("order updated successfully");
-                        res.status(200).json({ success: true, data: data,message:"update order successfully" })
+                        res.status(200).json({ success: true, data: data, message: "update order successfully" })
                   })
                   .catch(e => {
-                        console.log("e",e);
-                        res.status(500).json({ success: false, error: e,message:"update order failed" });
+                        logger.error(e.stack);
+                        console.log("e", e);
+                        res.status(500).json({ success: false, error: e, message: "update order failed" });
                   })
       }
 
       static getOrders(req, res) {
             Order.find()
                   .then(data => {
-                        res.status(200).json({ success: true, data: data,message:"get orders successfully" });
+                        return res.status(200).json({ success: true, data: data, message: "get orders successfully" });
                   })
                   .catch(e => {
-                        console.log("e",e);
-                        res.status(500).json({ success: false, error: e,message:"get order failed" });
+                        logger.error(e.stack);
+                        console.log("e", e);
+                        res.status(500).json({ success: false, error: e, message: "get order failed" });
                   })
       }
 
@@ -365,11 +385,12 @@ module.exports = class StartStopVisitController {
             updatedObj.save()
                   .then(data => {
                         console.log("order added successfully");
-                        res.status(200).json({ success: true, data: data,message:"order added successfully" })
+                        res.status(200).json({ success: true, data: data, message: "order added successfully" })
                   })
                   .catch(e => {
-                        console.log("e",e);
-                        res.status(500).json({ success: true, error: e,message:"order add error" });
+                        logger.error(e.stack);
+                        console.log("e", e);
+                        res.status(500).json({ success: true, error: e, message: "order add error" });
                   })
 
       }
@@ -380,11 +401,12 @@ module.exports = class StartStopVisitController {
 
             Order.deleteOne({ _id: meetingId })
                   .then(data => {
-                        res.status(200).json({ success: true, data: data,message:"order deleted successfully" });
+                        res.status(200).json({ success: true, data: data, message: "order deleted successfully" });
                   })
                   .catch(e => {
-                        console.log("e",e);
-                        res.status(500).json({ success: false, error: e,message:"order delete failed" });
+                        logger.error(e.stack);
+                        console.log("e", e);
+                        res.status(500).json({ success: false, error: e, message: "order delete failed" });
                   })
 
       }
@@ -400,14 +422,15 @@ module.exports = class StartStopVisitController {
                         console.log("data", data, "userID", userId);
                         if (data.length > 0) {
                               let lastVisit = data.length - 1;
-                              res.status(200).json({ success: true, data: data[lastVisit],message:"get last running visit" });
+                              res.status(200).json({ success: true, data: data[lastVisit], message: "get last running visit" });
                         }
                         else
-                              res.status(200).json({ success: true, data: null,message:"get no last running visit  "  });
+                              res.status(200).json({ success: true, data: null, message: "get no last running visit  " });
                   })
                   .catch(e => {
-                        console.log("e",e);
-                        res.status(500).json({ success: false, error: 'something went wrong',message:"get last running visit error" });
+                        logger.error(e.stack);
+                        console.log("e", e);
+                        res.status(500).json({ success: false, error: 'something went wrong', message: "get last running visit error" });
                   })
 
       }
