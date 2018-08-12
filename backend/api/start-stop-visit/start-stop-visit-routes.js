@@ -18,6 +18,9 @@ module.exports = class StartStopVisitRoute {
             .post(StartStopVisitController.updateOrder);
 
         router
+            .route('/api/update-order-web')
+            .post(StartStopVisitController.updateOrderWebApp);
+        router
             .route('/api/add-order')
             .post(StartStopVisitController.addOrder);
 
@@ -32,7 +35,7 @@ module.exports = class StartStopVisitRoute {
             .route('/api/getMeetings')
             .get(StartStopVisitController.getMeetings)
             router
-            .route('/api/getOrders')
-            .get(StartStopVisitController.getOrders)
+            .route('/api/getAllOrders')
+            .get(StartStopVisitController.getAllOrders)
     }
 }

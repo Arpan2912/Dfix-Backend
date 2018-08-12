@@ -52,6 +52,7 @@ module.exports = class AuthenticationController {
   }
   static authenticateAdmin(req, res) {
     let email = req.body.email;
+    //password converted into md5 encrypt
     let password = CryptoJS.MD5(req.body.password).toString();
     Admin.find({
       email: email,

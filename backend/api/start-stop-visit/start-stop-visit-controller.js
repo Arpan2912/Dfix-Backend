@@ -13,8 +13,8 @@ let s3Url = `${config.s3.url}${config.s3.bucketName}/`
 module.exports = class StartStopVisitController {
       /**
        * store image on local machine
-       * @param {*} req 
-       * @param {*} res 
+       * @param {*} req
+       * @param {*} res
        */
       static startVisit1(req, res) {
             let data = req.body;
@@ -346,11 +346,49 @@ module.exports = class StartStopVisitController {
                         res.status(500).json({ success: false, error: e, message: "update order failed" });
                   })
       }
+      //web app update order
+      static updateOrderWebApp(req, res) {
+            // let userId = req.body.userId;
+
+            let body = req.body;
+            let orderId = body._id;
+            let updatedObj = {
+                  item_name: body.item_name,
+                  item_price: body.item_price,
+                  item_quantity: body.item_quantity,
+                  org_name:body.org_name,
+                  user_name:body.user_name,
+                  updated_at: new Date().toISOString()
+            }
+            let orderObj = req.body.orderObj;
+            Order.findOneAndUpdate({ _id: orderId }, updatedObj, { new: true })
+                  .then(data => {
+                        console.log("order updated successfully");
+                        console.log(data);
+                        res.status(200).json({ success: true, data: data,message:"update order successfully" })
+                  })
+                  .catch(e => {
+                        console.log("e",e);
+                        res.status(500).json({ success: false, error: e,message:"update order failed" });
+                  })
+      }
 
       static getOrders(req, res) {
-            Order.find()
+        const id=req.params.id;
+        Order.find({"meeting_id":id})
                   .then(data => {
-                        return res.status(200).json({ success: true, data: data, message: "get orders successfully" });
+                    res.status(200).json({ success: true, data: data,message:"get orders successfully" });
+                  })
+                  .catch(e => {
+                        console.log("e",e);
+                        logger.error(e.stack);
+                        res.status(500).json({ success: false, error: e,message:"get order failed" });
+                  })
+      }
+      static getAllOrders(req, res) {
+        Order.find({})
+                  .then(data => {
+                    res.status(200).json({ success: true, data: data,message:"get orders successfully" });
                   })
                   .catch(e => {
                         logger.error(e.stack);
@@ -358,7 +396,6 @@ module.exports = class StartStopVisitController {
                         res.status(500).json({ success: false, error: e, message: "get order failed" });
                   })
       }
-
       static addOrder(req, res) {
             let userId = req.body.userId;
             let body = req.body;
@@ -398,8 +435,7 @@ module.exports = class StartStopVisitController {
             // let userId = req.body.userId;
             let body = req.body;
             let meetingId = body.orderId;
-
-            Order.deleteOne({ _id: meetingId })
+            Order.deleteOne({ meeting_id: meetingId })
                   .then(data => {
                         res.status(200).json({ success: true, data: data, message: "order deleted successfully" });
                   })

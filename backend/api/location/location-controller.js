@@ -79,15 +79,24 @@ module.exports = class LocationController {
             return res.status(500).json({ success: false, data: e, message: "location fetch error" });
         })
     }
-    static getLocation(req, res) {
+    static getLocation(req,res){
+      Location.find({"user_id":req.body._id}).then(data=>{
+        var newRes=[];
         console.log(req.body);
-        Location.find({ "user_id": req.body._id }).then(data => {
-            console.log(data);
-            return res.json({ "success": true, "data": data });
-        }).catch(e => {
-            logger.error(e.stack);
-            return res.json({ success: false, data: e });
-        })
+        for(var i in data){
+          var date =new Date(data[i].created_at).setHours(0,0,0)/1000;
+          var selectedDate=new Date(req.body.date).setHours(0,0,0)/1000;
+          // console.log(req.body.date);
+          if(Math.floor(date)==Math.floor(selectedDate)) {
+            newRes=data[i];
+          }
+        }
+        // console.log(newRes);
+        return res.json({"success":true,"data":newRes});
+      }).catch(e=>{
+        logger.error(e.stack);
+        return res.json({success:false,data:e});
+      })
     }
 
 }
