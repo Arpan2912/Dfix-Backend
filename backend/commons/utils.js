@@ -12,7 +12,6 @@ module.exports = class Utils {
         // indianDate.set("");
         return indianDate;
     }
-
     /* 
     let imgData = new Buffer(image.replace(/^data:image\/\w+;base64,/, ""), 'base64');
                     let imageType = ProductController.extractExtension(image);
@@ -28,7 +27,7 @@ module.exports = class Utils {
             let params = {
                 // ACL: process.env.AWS_ACL,
                 Body: bufferdata,
-                Bucket: 'd-fix',
+                Bucket: 'd-fix-test',
                 Key: `${fileName}`,
                 // ServerSideEncryption: null,
                 Tagging: "usage=byDeveloper",
@@ -36,7 +35,8 @@ module.exports = class Utils {
                 ContentType: contentType,
             };
 
-            let bucketFolder = `${bucketName}/${userId}`;
+            // let bucketFolder = `${bucketName}/${userId}`;
+            let bucketFolder = `d-fix-test/${userId}`;
             let executeUploadOnAmazonS3 = () => {
                 s3.upload(params, function (err, result) {
                     if (err) {
