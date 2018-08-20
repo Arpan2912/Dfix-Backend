@@ -25,7 +25,7 @@ module.exports = class Utils {
             });
 
             let params = {
-                // ACL: process.env.AWS_ACL,
+                ACL: 'public-read-write',
                 Body: bufferdata,
                 Bucket: 'd-fix-test',
                 Key: `${fileName}`,

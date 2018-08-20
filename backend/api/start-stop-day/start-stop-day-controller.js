@@ -229,13 +229,13 @@ module.exports = class StartStopDayController {
                 return DaySummary.findOneAndUpdate({ _id: _id }, daySummary, { new: true })
             })
             .then(data => {
-                console.log("data", result);
-                console.log('attandance updated');
-                res.status(200).json({ success: true, data: stopDayResult, message: "day stopped successfully" });
+                stopDayResult = data;
+                console.log("data", data);
+                return res.status(200).send({ success: true, data: stopDayResult, message: "day stopped successfully" });
             })
             .catch(e => {
-                logger.error(err.stack);
-                res.status(500).json({ success: false, error: e, message: "day stop error" });
+                logger.error(e.stack);
+                return res.status(500).send({ success: false, error: e, message: "day stop error" });
             })
     }
 
