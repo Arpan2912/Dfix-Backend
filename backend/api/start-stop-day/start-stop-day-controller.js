@@ -1,10 +1,12 @@
-const DaySummary = require('../../model/start-stop-day-model');
-const Attandance = require('../../model/attandance-model');
+const bluebird = require("bluebird");
 const fs = require('fs');
 const moment = require('moment');
+const DaySummary = require('../../model/start-stop-day-model');
+const Attandance = require('../../model/attandance-model');
 const Utils = require("../../commons/utils");
 const logger = require("../../config/winston");
 const config = require(`../../constants/${process.env.NODE_ENV}.json`);
+
 let s3Url = `${config.s3.url}${config.s3.bucketName}/`
 module.exports = class StartStopDayController {
 
@@ -283,11 +285,25 @@ module.exports = class StartStopDayController {
         DaySummary
             .find()
             .then(data => {
-                data.forEach(function(element) {
-                   element.start_image = s3Url+element.start_image;
-                   element.end_image = s3Url+element.end_image; 
-                }, this);
-                return res.status(200).json({ success: true, data: data, message: "get today summary" });
+                bluebird.map(data, (item, index, length) => {
+                    item.start_image = s3Url + item.start_image;
+                    if (item.end_image) {
+                        item.end_image = s3Url + item.end_image;
+                    }
+                    console.log("item", item);
+                    return Promise.resolve(item);
+                }).then(preparedObj => {
+                    return res.status(200).json({ success: true, data: preparedObj, message: "get today summary" });
+                }).catch(e => {
+                    console.log("e", e);
+                    logger.error(e.stack);
+                    return res.status(500).json({ success: false, error: e, message: "internal server error" });
+                })
+                // data.forEach(function (element) {
+                //     element.start_image = s3Url + element.start_image;
+                //     element.end_image = s3Url + element.end_image;
+                // }, this);
+                // return res.status(200).json({ success: true, data: data, message: "get today summary" });
             }).catch(e => {
                 console.log("e", e);
                 logger.error(e.stack);

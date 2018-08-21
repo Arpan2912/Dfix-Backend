@@ -1,12 +1,12 @@
 const ExpenseController = require('./expense-controller');
 module.exports = class ExpenseRoute {
     static init(router) {
-      //add expense
+        //add expense
         router
             .route('/api/add-expense')
             .post(ExpenseController.addExpense);
 
-      //update expense
+        //update expense
         router
             .route('/api/update-expense')
             .post(ExpenseController.updateExpense);
@@ -20,9 +20,9 @@ module.exports = class ExpenseRoute {
         router
             .route('/api/get-today-expense')
             .post(ExpenseController.getTodayExpense);
-            
-            //get all expenses
-            router
+
+        //get all expenses
+        router
             .route('/api/getExpense')
             .get(ExpenseController.getExpense)
     }

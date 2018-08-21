@@ -17,10 +17,11 @@ module.exports = class StartStopDayRoute {
             .route('/api/get-start-day-details/:userId')
             .get(StartStopDayController.getTodayStartDayDetails);
 
-            router
+        router
             .route('/api/get-day-summary')
             .get(StartStopDayController.getDaySummary)
-            router
+            
+        router
             .route('/api/resetEndTime')
             .post(StartStopDayController.resetEndTime)
     }

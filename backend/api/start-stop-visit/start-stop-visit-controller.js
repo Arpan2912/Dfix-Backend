@@ -310,14 +310,24 @@ module.exports = class StartStopVisitController {
             Meeting
                   .find()
                   .then(data => {
-                        data.forEach(function(element) {
-                              element.org_image = s3Url+element.org_image;
-                           }, this);
-                        return res.status(200).json({ success: true, data: data, message: "get visit successfully" });
+                        bluebird.map(data, (item, index, length) => {
+                              item.org_image = s3Url + item.org_image;
+                              return Promise.resolve(item);
+                        }).then(preparedObj => {
+                              return res.status(200).json({ success: true, data: preparedObj, message: "get visit successfully" });
+                        }).catch(e => {
+                              logger.error(e.stack);
+                              console.log("e", e);
+                              return res.status(500).json({ success: false, error: e, message: "stop visit failed" });
+                        })
+                        // data.forEach(function (element) {
+                        //       element.org_image = s3Url + element.org_image;
+                        // }, this);
+                        // return res.status(200).json({ success: true, data: data, message: "get visit successfully" });
                   }).catch(e => {
                         logger.error(e.stack);
                         console.log("e", e);
-                        res.status(500).json({ success: false, error: e, message: "stop visit failed" });
+                        return res.status(500).json({ success: false, error: e, message: "stop visit failed" });
                   })
       }
 
@@ -356,8 +366,8 @@ module.exports = class StartStopVisitController {
                   item_name: body.item_name,
                   item_price: body.item_price,
                   item_quantity: body.item_quantity,
-                  org_name:body.org_name,
-                  user_name:body.user_name,
+                  org_name: body.org_name,
+                  user_name: body.user_name,
                   updated_at: new Date().toISOString()
             }
             let orderObj = req.body.orderObj;
@@ -365,30 +375,30 @@ module.exports = class StartStopVisitController {
                   .then(data => {
                         console.log("order updated successfully");
                         console.log(data);
-                        res.status(200).json({ success: true, data: data,message:"update order successfully" })
+                        res.status(200).json({ success: true, data: data, message: "update order successfully" })
                   })
                   .catch(e => {
-                        console.log("e",e);
-                        res.status(500).json({ success: false, error: e,message:"update order failed" });
+                        console.log("e", e);
+                        res.status(500).json({ success: false, error: e, message: "update order failed" });
                   })
       }
 
       static getOrders(req, res) {
-        const id=req.params.id;
-        Order.find({"meeting_id":id})
+            const id = req.params.id;
+            Order.find({ "meeting_id": id })
                   .then(data => {
-                    res.status(200).json({ success: true, data: data,message:"get orders successfully" });
+                        res.status(200).json({ success: true, data: data, message: "get orders successfully" });
                   })
                   .catch(e => {
-                        console.log("e",e);
+                        console.log("e", e);
                         logger.error(e.stack);
-                        res.status(500).json({ success: false, error: e,message:"get order failed" });
+                        res.status(500).json({ success: false, error: e, message: "get order failed" });
                   })
       }
       static getAllOrders(req, res) {
-        Order.find({})
+            Order.find({})
                   .then(data => {
-                    res.status(200).json({ success: true, data: data,message:"get orders successfully" });
+                        res.status(200).json({ success: true, data: data, message: "get orders successfully" });
                   })
                   .catch(e => {
                         logger.error(e.stack);

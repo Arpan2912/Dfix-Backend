@@ -172,14 +172,22 @@ module.exports = class ExpenseController {
                         return res.status(500).json({ success: false, error: e, message: "internal server error" });
                   })
       }
+
       static getExpense(req, res) {
             Expense
                   .find()
                   .then(data => {
-                        data.forEach(function(element) {
-                              element.image_url = s3Url+element.image_url;
-                           }, this);
-                        return res.status(200).json({ success: true, data: data, message: "get expense successfully" });
+                        bluebird.map(data, (item, index, length) => {
+                              item.image_url = s3Url + item.image_url;
+                              return Promise.resolve(item);
+                        }).then(preparedObj => {
+                              console.log(preparedObj);
+                              return res.status(200).json({ success: true, data: preparedObj, message: "get expense successfully" });
+                        }).catch(e => {
+                              logger.error(e.stack);
+                              console.log("e", e);
+                              return res.status(500).json({ success: false, error: e, message: "internal server error" });
+                        })
                   }).catch(e => {
                         logger.error(e.stack);
                         console.log("e", e);
