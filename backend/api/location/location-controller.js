@@ -1,5 +1,8 @@
 const Location = require('../../model/location-model');
 const logger = require('../../config/winston');
+const Utils = require('../../commons/utils');
+const momentTimezone = require('moment-timezone');
+
 module.exports = class LocationController {
 
     static addOrUpdateUserLocation(req, res) {
@@ -79,24 +82,35 @@ module.exports = class LocationController {
             return res.status(500).json({ success: false, data: e, message: "location fetch error" });
         })
     }
-    static getLocation(req,res){
-      Location.find({"user_id":req.body._id}).then(data=>{
-        var newRes=[];
-        console.log(req.body);
-        for(var i in data){
-          var date =new Date(data[i].created_at).setHours(0,0,0)/1000;
-          var selectedDate=new Date(req.body.date).setHours(0,0,0)/1000;
-          // console.log(req.body.date);
-          if(Math.floor(date)==Math.floor(selectedDate)) {
-            newRes=data[i];
-          }
-        }
-        // console.log(newRes);
-        return res.json({"success":true,"data":newRes});
-      }).catch(e=>{
-        logger.error(e.stack);
-        return res.json({success:false,data:e});
-      })
+    static getLocation(req, res) {
+        let date = '2018-09-01T17:22:59.396Z';
+        // let date = req.body.date ? req.body.date : new Date().toISOString();
+        let indianDate = Utils.getIndianDayStartTime(date);
+        let endDate = momentTimezone(indianDate).add(24, 'hours').toISOString();
+        console.log("isoDate", indianDate);
+        console.log("endDate", endDate);
+
+        Location.find({
+            "user_id": req.body._id,
+            "created_at": { $gt: indianDate, $lt: endDate }
+        }).then(data => {
+            console.log("data", data);
+            // var newRes = [];
+            // console.log(req.body);
+            // for (var i in data) {
+            //     var date = new Date(data[i].created_at).setHours(0, 0, 0) / 1000;
+            //     var selectedDate = new Date(req.body.date).setHours(0, 0, 0) / 1000;
+            //     // console.log(req.body.date);
+            //     if (Math.floor(date) == Math.floor(selectedDate)) {
+            //         newRes = data[i];
+            //     }
+            // }
+            // console.log(newRes);
+            return res.json({ "success": true, "data": data });
+        }).catch(e => {
+            logger.error(e.stack);
+            return res.json({ success: false, data: e });
+        })
     }
 
 }

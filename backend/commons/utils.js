@@ -12,6 +12,17 @@ module.exports = class Utils {
         // indianDate.set("");
         return indianDate;
     }
+
+    static getIndianDayStartTime(date) {
+        let indianDate = momentTimezone(date).tz('Asia/Kolkata');
+        indianDate.set('hour', 0);
+        indianDate.set('minute', 0);
+        indianDate.set('second', 0);
+        indianDate.set('millisecond', 0);
+        indianDate = indianDate.toISOString();
+        // indianDate.set("");
+        return indianDate;
+    }
     /* 
     let imgData = new Buffer(image.replace(/^data:image\/\w+;base64,/, ""), 'base64');
                     let imageType = ProductController.extractExtension(image);
