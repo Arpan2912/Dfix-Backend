@@ -167,11 +167,13 @@ module.exports = class StartStopVisitController {
             let stopDayResult = null;
             let orgName = data.orgName;
             let userName = data.userName;
+            let remarks = data.remarks;
             // console.log(err);
             let endMeeting = {};
             endMeeting.user_id = userId;
             endMeeting.end_time = new Date().toISOString();
             endMeeting.updated_at = new Date().toISOString();
+            endMeeting.remarks = remarks;
             console.log(endMeeting);
             console.log("id is ", meetingId);
 

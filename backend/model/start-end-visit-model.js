@@ -12,6 +12,7 @@ var Schema = mongoose.Schema,
             longitude:Number
         },
         end_time: String,
+        remarks:String,
         created_at: String,
         updated_at: String
     })
