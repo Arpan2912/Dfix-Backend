@@ -7,10 +7,10 @@
     "url":{
         "protocol":"http",
         "port":"3333",
-        "host":"localhost"
+        "host":"54.161.28.223"
     },
     "s3":{
         "url":"https://s3.amazonaws.com/",
-        "bucketName":"d-fix-test"
+        "bucketName":"d-fix"
     }
 }

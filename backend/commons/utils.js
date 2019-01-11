@@ -1,5 +1,6 @@
 const momentTimezone = require('moment-timezone');
 const aws = require('aws-sdk');
+const env = require(`../constants/${process.env.NODE_ENV}.json`);
 
 module.exports = class Utils {
     static getIndianDayStartTimeInIsoFormat() {
@@ -38,7 +39,8 @@ module.exports = class Utils {
             let params = {
                 ACL: 'public-read-write',
                 Body: bufferdata,
-                Bucket: 'd-fix-test',
+                // Bucket: 'd-fix-test',
+                Bucket: env.s3.bucketName,
                 Key: `${fileName}`,
                 // ServerSideEncryption: null,
                 Tagging: "usage=byDeveloper",
@@ -47,7 +49,7 @@ module.exports = class Utils {
             };
 
             // let bucketFolder = `${bucketName}/${userId}`;
-            let bucketFolder = `d-fix-test/${userId}`;
+            let bucketFolder = `${env.s3.bucketName}/${userId}`;
             let executeUploadOnAmazonS3 = () => {
                 s3.upload(params, function (err, result) {
                     if (err) {
