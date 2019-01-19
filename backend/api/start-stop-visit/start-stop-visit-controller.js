@@ -446,8 +446,8 @@ module.exports = class StartStopVisitController {
       static deleteOrder(req, res) {
             // let userId = req.body.userId;
             let body = req.body;
-            let meetingId = body.orderId;
-            Order.deleteOne({ meeting_id: meetingId })
+            let orderId = body.orderId;
+            Order.deleteOne({ _id: orderId })
                   .then(data => {
                         res.status(200).json({ success: true, data: data, message: "order deleted successfully" });
                   })

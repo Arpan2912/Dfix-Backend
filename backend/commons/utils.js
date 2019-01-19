@@ -97,4 +97,16 @@ module.exports = class Utils {
         return data_;
     };
 
+    static prepareFullName(firstName,lastName){
+        let name='';
+        if(firstName && lastName){
+            name = firstName +' '+lastName;
+        } else if(firstName){
+            name = firstName;
+        } else if(lastName){
+            name = lastName;
+        }
+        return name;
+    }
+
 }

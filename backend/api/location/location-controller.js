@@ -83,8 +83,8 @@ module.exports = class LocationController {
         })
     }
     static getLocation(req, res) {
-        let date = '2018-09-01T17:22:59.396Z';
-        // let date = req.body.date ? req.body.date : new Date().toISOString();
+        // let date = '2018-09-01T17:22:59.396Z';
+        let date = req.body.date ? req.body.date : new Date().toISOString();
         let indianDate = Utils.getIndianDayStartTime(date);
         let endDate = momentTimezone(indianDate).add(24, 'hours').toISOString();
         console.log("isoDate", indianDate);

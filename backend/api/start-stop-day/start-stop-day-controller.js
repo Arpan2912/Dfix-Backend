@@ -3,6 +3,7 @@ const fs = require('fs');
 const moment = require('moment');
 const DaySummary = require('../../model/start-stop-day-model');
 const Attandance = require('../../model/attandance-model');
+const User = require('../../model/user-model');
 const Utils = require("../../commons/utils");
 const logger = require("../../config/winston");
 const config = require(`../../constants/${process.env.NODE_ENV}.json`);
@@ -110,7 +111,8 @@ module.exports = class StartStopDayController {
             .then((data) => {
                 res.status(200).json({ success: true, data: data, message: "start day successfully" });
             }).catch(e => {
-                logger.error(err.stack);
+                console.log("e",e);
+                logger.error(e.stack);
                 res.status(500).json({ success: false, error: e, message: "start day error" });
             })
 
@@ -284,14 +286,31 @@ module.exports = class StartStopDayController {
     static getDaySummary(req, res) {
         DaySummary
             .find()
+            .sort({ created_at: -1 })
             .then(data => {
+                
                 bluebird.map(data, (item, index, length) => {
-                    item.start_image = s3Url + item.start_image;
-                    if (item.end_image) {
-                        item.end_image = s3Url + item.end_image;
-                    }
-                    console.log("item", item);
-                    return Promise.resolve(item);
+                    console.log("inside bluebird")
+                    return User.find({ _id: item.user_id })
+                        .then(data => {
+                            if (data.length > 0) {
+                                console.log("data length > 0",data.length);
+                                let name = Utils.prepareFullName(data[0].first_name, data[0].last_name);
+                                item.user_name = name;
+                                item.start_image = s3Url + item.start_image;
+                                if (item.end_image) {
+                                    item.end_image = s3Url + item.end_image;
+                                }
+                                console.log("item", item);
+                                return Promise.resolve(item);
+                            } else {
+                                return Promise.resolve(item);
+                            }
+                        })
+                        .catch(e => {
+                            console.log(e);
+                            return Promise.resolve(item);
+                        })
                 }).then(preparedObj => {
                     return res.status(200).json({ success: true, data: preparedObj, message: "get today summary" });
                 }).catch(e => {
